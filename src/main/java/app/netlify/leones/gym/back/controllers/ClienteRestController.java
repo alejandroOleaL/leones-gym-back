@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.netlify.leones.gym.back.models.entity.Cliente;
 import app.netlify.leones.gym.back.models.services.IClienteService;
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
@@ -55,7 +55,7 @@ public class ClienteRestController {
 	}
 	
 	@PostMapping("/clientes")
-	public ResponseEntity<?> crear(@RequestBody Cliente cliente) {
+	public ResponseEntity<?> crear(@Valid @RequestBody Cliente cliente) {
 		Cliente clienteNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
@@ -71,7 +71,7 @@ public class ClienteRestController {
 	}
 	
 	@PutMapping("/clientes/{id}")
-	public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
+	public ResponseEntity<?> update(@Valid @RequestBody Cliente cliente, @PathVariable Long id) {
 		
 		Cliente clienteActual = clienteService.findById(id);
 		Map<String, Object> response = new HashMap<>();
@@ -87,7 +87,7 @@ public class ClienteRestController {
 			clienteActual.setApellidos(cliente.getApellidos());
 			clienteActual.setCorreo(cliente.getCorreo());
 			
-			clienteActualizado = clienteService.save(clienteActualizado);
+			clienteActualizado = clienteService.save(clienteActual);
 			
 		} catch (Exception e) {
 			response.put("mensaje", "Error al actualizar la base de datos");
