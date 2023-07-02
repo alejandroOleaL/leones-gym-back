@@ -89,7 +89,8 @@ public class ClienteRestController {
 			
 			clienteActualizado = clienteService.save(clienteActual);
 			
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			response.put("mensaje", "Error al actualizar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);

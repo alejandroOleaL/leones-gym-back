@@ -28,12 +28,12 @@ public class Cliente implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotEmpty
+	@NotEmpty(message = "El nombre no puede ser vacio")
 	@Size(min=4, max=30)
 	@Column(nullable = false)
 	private String nombre;
 	
-	@NotEmpty
+	@NotEmpty(message = "Los apellidos no pueden estar vacios")
 	private String apellidos;
 	
 	@Column(name = "fecha_registro")
