@@ -2,3 +2,12 @@
 INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('alex', 'locia', '2023-04-10', '2023-04-10', '2023-05-10', '7471', 'alex@mail.com');
 INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('bryan', 'lopez', '2023-03-09', '2023-03-09', '2023-04-09', '837636', 'bryan@mail.com');
 INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('wilianismo', '', '2023-02-12', '2023-02-12', '2023-03-12', '64747', 'wiliam@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('andres', 'gracida', '2023-04-10', '2023-04-10', '2023-05-10', '7471', 'andres@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('andres', 'gallardo', '2023-03-09', '2023-03-09', '2023-04-09', '837636', 'gracida@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('axel', 'gracida', '2023-02-12', '2023-02-12', '2023-03-12', '64747', 'axel@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('axel', 'gallardo', '2023-04-10', '2023-04-10', '2023-05-10', '7471', 'gall@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('atzel', 'alvarez', '2023-03-09', '2023-03-09', '2023-04-09', '837636', 'alv@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('fernando', 'alvarez', '2023-02-02', '2023-02-12', '2023-03-12', '64747', 'fer@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('atzel', 'gallardo', '2023-04-01', '2023-04-10', '2023-05-10', '7471', 'atz@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('fernando', 'gallardo', '2023-03-09', '2023-03-09', '2023-04-09', '837636', 'ga@mail.com');
+INSERT INTO clientes (nombre, apellidos, fecha_registro, fecha_inicio, fecha_fin, telefono, correo) VALUES('juan', 'panchogro', '2023-02-14', '2023-02-12', '2023-03-12', '64747', 'juan@mail.com');
