@@ -1,9 +1,16 @@
 package app.netlify.leones.gym.back.models.dao;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import app.netlify.leones.gym.back.models.entity.Cliente;
+import app.netlify.leones.gym.back.models.entity.Periodo;
 
-public interface IClienteDao extends CrudRepository<Cliente, Long>{
+public interface IClienteDao extends JpaRepository<Cliente, Long>{
+	
+	@Query("from Periodo")
+	public List<Periodo> findAllPeriodos();
 
 }
