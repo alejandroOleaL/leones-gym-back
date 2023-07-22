@@ -65,6 +65,8 @@ public class Cliente implements Serializable {
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	private Periodo periodo;
 	
+	private int numControl;
+	
 	public Long getId() {
 		return id;
 	}
