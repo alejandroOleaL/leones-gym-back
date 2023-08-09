@@ -17,4 +17,6 @@ public interface IUploadFileService {
 	
 	public Path getPath(String nombreFoto);
 
+	String copiarQr(MultipartFile archivo) throws IOException;
+
 }

@@ -29,8 +29,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import app.netlify.leones.gym.back.models.entity.Cliente;
 import app.netlify.leones.gym.back.models.entity.Periodo;
+import app.netlify.leones.gym.back.models.services.EmailService;
 import app.netlify.leones.gym.back.models.services.IClienteService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
+import app.netlify.leones.gym.back.models.services.QRCodeService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @CrossOrigin(origins = { "http://localhost:4200" })
@@ -43,17 +46,28 @@ public class ClienteRestController {
 	
 	@Autowired
 	private IUploadFileService uploadService;
+	
+	@Autowired
+    private QRCodeService qrCodeService;
+	
+	@Autowired
+	private EmailService emailService;
 
 	@GetMapping("/clientes")
 	public List<Cliente> index() {
 		return clienteService.findAll();
 	}
 
+	@GetMapping("/clientes/vencidos")
+	public List<Cliente> clientesVencidos() {
+		return clienteService.findAllClientesVencidos();
+	}
+
 	@GetMapping("/clientes/page/{page}")
 	public Page<Cliente> index(@PathVariable Integer page) {
 		return clienteService.findAll(PageRequest.of(page, 3));
 	}
-
+	
 	@GetMapping("/clientes/{id}")
 	public ResponseEntity<?> mostrarCliente(@PathVariable Long id) {
 		Cliente cliente = null;
@@ -222,4 +236,17 @@ public class ClienteRestController {
 		
 		return numControl;
 	}
+	
+	 @GetMapping("/v1/qrcode")
+	    public void generateQRCode(HttpServletResponse response,
+	                               @RequestParam String text,
+	                               @RequestParam(defaultValue = "350") int width,
+	                               @RequestParam(defaultValue = "350") int height) throws Exception {
+	        
+		 String path = qrCodeService.generateQRCode(text, width, height);
+	        
+	        this.emailService.sendListEmail("alejandro12olea@gmail.com", path);
+
+	    }
+	 
 }
