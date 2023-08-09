@@ -21,5 +21,7 @@ public interface IClienteService {
 	public void delete(Long id);
 	
 	public List<Periodo> findAllPeriodos();
+	
+	public List<Cliente> findAllClientesVencidos();
 
 }

@@ -48,6 +48,15 @@ public class UploadFileServiceImpl implements IUploadFileService{
 		
 		return nombreArchivo;
 	}
+	
+	@Override
+	public String copiarQr(MultipartFile archivo) throws IOException {
+		String nombreArchivo = UUID.randomUUID().toString() + "_" + archivo.getOriginalFilename().replace(" ", "");
+		Path rutaArhivo = getPath(nombreArchivo);
+		log.info(rutaArhivo.toString());
+		
+		return nombreArchivo;
+	}
 
 	@Override
 	public boolean eliminar(String nombreFoto) {

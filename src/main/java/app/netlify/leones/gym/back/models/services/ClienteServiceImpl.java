@@ -53,4 +53,9 @@ public class ClienteServiceImpl implements IClienteService {
 		return clienteDao.findAllPeriodos();
 	}
 
+	@Override
+	public List<Cliente> findAllClientesVencidos() {
+		return clienteDao.findAllClientesVencidos();
+	}
+
 }

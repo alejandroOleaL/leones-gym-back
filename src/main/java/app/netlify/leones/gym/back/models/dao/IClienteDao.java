@@ -12,5 +12,8 @@ public interface IClienteDao extends JpaRepository<Cliente, Long>{
 	
 	@Query("from Periodo")
 	public List<Periodo> findAllPeriodos();
+	
+	@Query("from Cliente c where c.fechaFin <= CURDATE()")
+	public List<Cliente> findAllClientesVencidos();
 
 }
