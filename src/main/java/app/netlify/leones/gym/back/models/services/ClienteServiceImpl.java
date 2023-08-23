@@ -54,8 +54,14 @@ public class ClienteServiceImpl implements IClienteService {
 	}
 
 	@Override
-	public List<Cliente> findAllClientesVencidos() {
-		return clienteDao.findAllClientesVencidos();
+	@Transactional(readOnly = true)
+	public Page<Cliente> findAllClientesVencidos(Pageable pageable) {
+		return clienteDao.findAllClientesVencidos(pageable);
 	}
 
+	@Override
+	public Cliente findByNumControl(String numControl) {
+		return clienteDao.findByNumControl(numControl);
+	}
+	
 }

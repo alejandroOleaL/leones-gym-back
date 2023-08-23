@@ -22,6 +22,8 @@ public interface IClienteService {
 	
 	public List<Periodo> findAllPeriodos();
 	
-	public List<Cliente> findAllClientesVencidos();
+	public Page<Cliente> findAllClientesVencidos(Pageable pageable);
+	
+	public Cliente findByNumControl(String id);
 
 }

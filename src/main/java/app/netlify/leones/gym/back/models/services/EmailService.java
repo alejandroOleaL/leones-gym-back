@@ -15,13 +15,13 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class EmailService {
-	
+
 	@Autowired
 	JavaMailSender javaMailSender;
-	
+
 	@Value("${spring.mail.username}")
 	private String email;
-	
+
 	public void sendListEmail(String emailTo, String image) {
 		MimeMessage message = javaMailSender.createMimeMessage();
 		try {
@@ -30,16 +30,14 @@ public class EmailService {
 			helper.setTo(emailTo);
 			helper.setSubject("Listado");
 			helper.setText("Estimado cliente");
-			
+
 			FileSystemResource file = new FileSystemResource(new File(image));
-            helper.addAttachment(image, file);
-			
+			helper.addAttachment(image, file);
+
 			javaMailSender.send(message);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
-		
 	}
 
 }

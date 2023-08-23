@@ -28,9 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import app.netlify.leones.gym.back.models.entity.Cliente;
+import app.netlify.leones.gym.back.models.entity.Historial;
 import app.netlify.leones.gym.back.models.entity.Periodo;
 import app.netlify.leones.gym.back.models.services.EmailService;
 import app.netlify.leones.gym.back.models.services.IClienteService;
+import app.netlify.leones.gym.back.models.services.IHistorialService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
 import app.netlify.leones.gym.back.models.services.QRCodeService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,13 +45,16 @@ public class ClienteRestController {
 
 	@Autowired
 	private IClienteService clienteService;
-	
+
+	@Autowired
+	private IHistorialService historialService;
+
 	@Autowired
 	private IUploadFileService uploadService;
-	
+
 	@Autowired
-    private QRCodeService qrCodeService;
-	
+	private QRCodeService qrCodeService;
+
 	@Autowired
 	private EmailService emailService;
 
@@ -58,22 +63,52 @@ public class ClienteRestController {
 		return clienteService.findAll();
 	}
 
-	@GetMapping("/clientes/vencidos")
-	public List<Cliente> clientesVencidos() {
-		return clienteService.findAllClientesVencidos();
+	@GetMapping("/clientes/vencidos/{page}")
+	public Page<Cliente> clientesVencidos(@PathVariable Integer page) {
+		return clienteService.findAllClientesVencidos(PageRequest.of(page, 3));
+	}
+
+	@GetMapping("/historial/page/{page}")
+	public Page<Historial> historial(@PathVariable Integer page) {
+		return historialService.findAll(PageRequest.of(page, 3));
 	}
 
 	@GetMapping("/clientes/page/{page}")
 	public Page<Cliente> index(@PathVariable Integer page) {
 		return clienteService.findAll(PageRequest.of(page, 3));
 	}
-	
-	@GetMapping("/clientes/{id}")
+
+	@GetMapping("/clientes/qr/{id}")
 	public ResponseEntity<?> mostrarCliente(@PathVariable Long id) {
 		Cliente cliente = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
 			cliente = clienteService.findById(id);
+
+			Historial historial = new Historial();
+			historial.setCliente(cliente);
+			Date fechaHoy = new Date();
+			historial.setFechaVisita(fechaHoy);
+			historialService.save(historial);
+
+			boolean estatus = validarEstatus(cliente);
+			cliente.setEstatus(estatus);
+
+		} catch (Exception e) {
+			response.put("mensaje", "Error al consultar la base de datos");
+			response.put("error", e.getMessage().concat(": "));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+	}
+
+	@GetMapping("/clientes/numero/control/{numcontrol}")
+	public ResponseEntity<?> mostrarClienteNumControl(@PathVariable String numcontrol) {
+		Cliente cliente = null;
+		Map<String, Object> response = new HashMap<>();
+		try {
+			cliente = clienteService.findByNumControl(numcontrol);
+
 		} catch (Exception e) {
 			response.put("mensaje", "Error al consultar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -91,16 +126,15 @@ public class ClienteRestController {
 		Cliente clienteNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
-			
-			//obtener control
-			//int numControl = obtenerNumControl();
-			
+			int numControl = (int) obtenerNumeroControl();
+
 			Date fechaFin = new Date();
-			fechaFin = sumarDiasAFecha(30);
+			fechaFin = sumarDiasAFecha(cliente.getDiasPeriodo());
 			cliente.setFechaFin(fechaFin);
-			//cliente.setNumControl(numControl);
-			
+			cliente.setNumControl(numControl);
+
 			clienteNuevo = clienteService.save(cliente);
+			generarQR(clienteNuevo);
 		} catch (Exception e) {
 			response.put("mensaje", "Error al insertar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -122,17 +156,15 @@ public class ClienteRestController {
 			response.put("mensaje", "Error no se pudo editar al cliente");
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
-
 		try {
 			clienteActual.setNombre(cliente.getNombre());
 			clienteActual.setApellidos(cliente.getApellidos());
 			clienteActual.setCorreo(cliente.getCorreo());
 			clienteActual.setPeriodo(cliente.getPeriodo());
-			
-			//agregar v
+
 			Date fechaActualizar = new Date();
 			fechaActualizar = sumarDiasAFecha(30);
-			
+
 			clienteActual.setFechaInicio(fechaActualizar);
 
 			clienteActualizado = clienteService.save(clienteActual);
@@ -152,12 +184,12 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 
 		try {
-			Cliente cliente = clienteService.findById(id);			
+			Cliente cliente = clienteService.findById(id);
 			String nombreFotoAnterior = cliente.getFoto();
 			uploadService.eliminar(nombreFotoAnterior);
-			
+
 			clienteService.delete(id);
-			
+
 		} catch (Exception e) {
 			response.put("mensaje", "Error al eliminar de la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -184,7 +216,7 @@ public class ClienteRestController {
 			}
 
 			String nombreFotoAnterior = cliente.getFoto();
-			
+
 			uploadService.eliminar(nombreFotoAnterior);
 
 			cliente.setFoto(nombreArchivo);
@@ -196,10 +228,10 @@ public class ClienteRestController {
 
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
-	
+
 	@GetMapping("/uploads/img/{nombreFoto:.+}")
-	public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto){
-		
+	public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto) {
+
 		Resource recurso = null;
 
 		try {
@@ -207,46 +239,66 @@ public class ClienteRestController {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		
+
 		HttpHeaders cabecera = new HttpHeaders();
 		cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"");
-		
+
 		return new ResponseEntity<Resource>(recurso, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/clientes/periodos")
 	public List<Periodo> listarPeriodos() {
 		return clienteService.findAllPeriodos();
 	}
 
-	public static Date sumarDiasAFecha(int dias){
-		Date fecha = new Date();
-	      if (dias==0) {
-	    	  return fecha;
-	      }
-	      Calendar calendar = Calendar.getInstance();
-	      calendar.setTime(fecha); 
-	      calendar.add(Calendar.DAY_OF_YEAR, dias);  
-	      return calendar.getTime(); 
+	@GetMapping("/v1/qrcode")
+	public void generateQRCode(HttpServletResponse response, @RequestParam String text,
+			@RequestParam(defaultValue = "350") int width, @RequestParam(defaultValue = "350") int height)
+			throws Exception {
+
+		String path = qrCodeService.generateQRCode(text, width, height);
+
+		this.emailService.sendListEmail("alejandro12olea@gmail.com", path);
 	}
-	
-	public int obtenerNumControl() {
-		int numControl = 0;
-		//procedimiento
-		
+
+	public void generarQR(Cliente cliente) throws Exception {
+		String text = Long.toString(cliente.getId());
+		int width = 350;
+		int height = 350;
+
+		String path = qrCodeService.generateQRCode(text, width, height);
+
+		this.emailService.sendListEmail(cliente.getCorreo(), path);
+	}
+
+	public static Date sumarDiasAFecha(int dias) {
+		Date fecha = new Date();
+		if (dias == 0) {
+			return fecha;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(fecha);
+		calendar.add(Calendar.DAY_OF_YEAR, dias);
+		return calendar.getTime();
+	}
+
+	public boolean validarEstatus(Cliente cliente) {
+		boolean estatus = true;
+		Date fechaHoy = new Date();
+		if (cliente.getFechaFin().equals(fechaHoy)) {
+			System.out.println("Fecha del cliente fin es igual a hoy");
+			estatus = false;
+		} else if (fechaHoy.after(cliente.getFechaFin())) {
+			System.out.println("Fecha del cliente fin es mayor a hoy");
+			estatus = false;
+		}
+		return estatus;
+	}
+
+	public int obtenerNumeroControl() {
+		int numControl = (int) (Math.random() * 9999 + 1);
+
 		return numControl;
 	}
-	
-	 @GetMapping("/v1/qrcode")
-	    public void generateQRCode(HttpServletResponse response,
-	                               @RequestParam String text,
-	                               @RequestParam(defaultValue = "350") int width,
-	                               @RequestParam(defaultValue = "350") int height) throws Exception {
-	        
-		 String path = qrCodeService.generateQRCode(text, width, height);
-	        
-	        this.emailService.sendListEmail("alejandro12olea@gmail.com", path);
 
-	    }
-	 
 }

@@ -2,6 +2,8 @@ package app.netlify.leones.gym.back.models.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,6 +16,9 @@ public interface IClienteDao extends JpaRepository<Cliente, Long>{
 	public List<Periodo> findAllPeriodos();
 	
 	@Query("from Cliente c where c.fechaFin <= CURDATE()")
-	public List<Cliente> findAllClientesVencidos();
+	public Page<Cliente> findAllClientesVencidos(Pageable pageable);
+	
+	@Query("from Cliente c where c.numControl like %?1%")
+	public Cliente findByNumControl(String numControl);
 
 }

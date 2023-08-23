@@ -85,8 +85,6 @@ public class UsuarioController {
 		try {
 			usuarioActual.setNombre(usuario.getNombre());
 			usuarioActual.setApellidos(usuario.getApellidos());
-			usuarioActual.setCorreo(usuario.getCorreo());
-			usuarioActual.setTelefono(usuario.getTelefono());
 			
 			usuarioActualizado = usuarioService.save(usuarioActual);
 			

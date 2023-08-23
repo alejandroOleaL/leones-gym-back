@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -66,6 +67,17 @@ public class Cliente implements Serializable {
 	private Periodo periodo;
 	
 	private int numControl;
+	
+	@Column(name = "dias_periodo")
+	private int diasPeriodo;
+	
+	private boolean estatus;
+	
+	@PrePersist
+	public void prePersist() {
+		fechaRegistro = new Date();
+		fechaInicio = new Date();
+	}
 	
 	public Long getId() {
 		return id;
@@ -126,6 +138,29 @@ public class Cliente implements Serializable {
 	}
 	public void setPeriodo(Periodo periodo) {
 		this.periodo = periodo;
+	}
+	
+	public int getNumControl() {
+		return numControl;
+	}
+
+	public void setNumControl(int numControl) {
+		this.numControl = numControl;
+	}
+
+	public int getDiasPeriodo() {
+		return diasPeriodo;
+	}
+	public void setDiasPeriodo(int diasPeriodo) {
+		this.diasPeriodo = diasPeriodo;
+	}
+
+	public boolean isEstatus() {
+		return estatus;
+	}
+
+	public void setEstatus(boolean estatus) {
+		this.estatus = estatus;
 	}
 
 }
