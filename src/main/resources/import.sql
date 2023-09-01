@@ -1,4 +1,3 @@
-/*DATOS DE PRUEBA TABLA CLIENTES*/
 INSERT INTO periodos (id, periodo) VALUES(1, 7);
 INSERT INTO periodos (id, periodo) VALUES(2, 15);
 INSERT INTO periodos (id, periodo) VALUES(3, 30);
@@ -14,7 +13,13 @@ INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo
 INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(2, 'fernando', 'alvarez', '2023-03-12', '64747', 'fer@mail.com', '', 6478, 30, false);
 INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(3, 'atzel', 'gallardo', '2023-05-10', '7471', 'atz@mail.com', '', 4758, 7, false);
 INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(1, 'fernando', 'gallardo', '2023-09-09', '837636', 'ga@mail.com', '', 9283, 30, true);
-INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo) VALUES(3, 'juan', 'panchogro', '2023-07-12', '64747', 'juan@mail.com', '', 4587, 30);
+INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(3, 'juan', 'panchogro', '2023-07-12', '64747', 'juan@mail.com', '', 4587, 30, true);
 
-INSERT INTO usuarios (id, nombre, apellidos, fecha_registro, enable, password, username, tipo) VALUES(1, 'supremo', 'kaiosama', '2023-08-15', 1, '123', 'supkaio', 'admin');
-INSERT INTO usuarios (id, nombre, apellidos, fecha_registro, enable, password, username, tipo) VALUES(2, 'goku', 'lopez', '2023-08-15', 1, '123', 'goku', 'usuario');
+INSERT INTO usuarios (nombre, apellidos, email, username, password, enabled) VALUES('supremo', 'kaiosama', 'sokaio@mail.com', 'supkaio', '$2a$10$lm8H0.J3pi1FpM3s3CUpe.Ym0FnlwHFclzGIGoWItLCN1vIFWEMmm', 1);
+INSERT INTO usuarios (nombre, apellidos, email, username, password, enabled) VALUES('andres', 'gordo', 'angor@mail.com', 'elgordo', '$2a$10$g2//5daw/XMhgjPbkryr7OL5h05zauUHrNhBL8ey6V0NNQHV/3dGm', 1);
+
+INSERT INTO roles (nombre) VALUES ('ROLE_USER');
+INSERT INTO roles (nombre) VALUES ('ROLE_ADMIN');
+
+INSERT INTO usuarios_roles (usuario_id, role_id) VALUES(1, 1);
+INSERT INTO usuarios_roles (usuario_id, role_id) VALUES(2, 2);

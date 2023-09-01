@@ -2,6 +2,8 @@ package app.netlify.leones.gym.back.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,8 +37,6 @@ import app.netlify.leones.gym.back.models.services.IClienteService;
 import app.netlify.leones.gym.back.models.services.IHistorialService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
 import app.netlify.leones.gym.back.models.services.QRCodeService;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 
 @CrossOrigin(origins = { "http://localhost:4200" })
 @RestController
@@ -78,6 +78,24 @@ public class ClienteRestController {
 		return clienteService.findAll(PageRequest.of(page, 3));
 	}
 
+	@GetMapping("/clientes/{id}")
+	public ResponseEntity<?> verCliente(@PathVariable Long id) {
+		Cliente cliente = null;
+		Map<String, Object> response = new HashMap<>();
+		try {
+			cliente = clienteService.findById(id);
+			
+			boolean estatus = validarEstatus(cliente);
+			cliente.setEstatus(estatus);
+
+		} catch (Exception e) {
+			response.put("mensaje", "Error al consultar la base de datos");
+			response.put("error", e.getMessage().concat(": "));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+	}
+
 	@GetMapping("/clientes/qr/{id}")
 	public ResponseEntity<?> mostrarCliente(@PathVariable Long id) {
 		Cliente cliente = null;
@@ -89,6 +107,8 @@ public class ClienteRestController {
 			historial.setCliente(cliente);
 			Date fechaHoy = new Date();
 			historial.setFechaVisita(fechaHoy);
+			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+			historial.setHoraVisita(dateFormat.format(fechaHoy));
 			historialService.save(historial);
 
 			boolean estatus = validarEstatus(cliente);
@@ -122,7 +142,7 @@ public class ClienteRestController {
 	}
 
 	@PostMapping("/clientes")
-	public ResponseEntity<?> crear(@Valid @RequestBody Cliente cliente) {
+	public ResponseEntity<?> crear(@RequestBody Cliente cliente) {
 		Cliente clienteNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
@@ -132,9 +152,10 @@ public class ClienteRestController {
 			fechaFin = sumarDiasAFecha(cliente.getDiasPeriodo());
 			cliente.setFechaFin(fechaFin);
 			cliente.setNumControl(numControl);
+			cliente.setEstatus(true);
 
 			clienteNuevo = clienteService.save(cliente);
-			generarQR(clienteNuevo);
+			generarQR(clienteNuevo, numControl);
 		} catch (Exception e) {
 			response.put("mensaje", "Error al insertar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -146,7 +167,7 @@ public class ClienteRestController {
 	}
 
 	@PutMapping("/clientes/{id}")
-	public ResponseEntity<?> update(@Valid @RequestBody Cliente cliente, @PathVariable Long id) {
+	public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
 
 		Cliente clienteActual = clienteService.findById(id);
 		Map<String, Object> response = new HashMap<>();
@@ -162,10 +183,14 @@ public class ClienteRestController {
 			clienteActual.setCorreo(cliente.getCorreo());
 			clienteActual.setPeriodo(cliente.getPeriodo());
 
-			Date fechaActualizar = new Date();
-			fechaActualizar = sumarDiasAFecha(30);
+			if (cliente.isEstatus() == false) {
+				Date fechaActualizar = new Date();
+				clienteActual.setFechaInicio(fechaActualizar);
+				fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
 
-			clienteActual.setFechaInicio(fechaActualizar);
+				clienteActual.setFechaFin(fechaActualizar);
+				clienteActual.setEstatus(true);
+			}
 
 			clienteActualizado = clienteService.save(clienteActual);
 
@@ -252,7 +277,7 @@ public class ClienteRestController {
 	}
 
 	@GetMapping("/v1/qrcode")
-	public void generateQRCode(HttpServletResponse response, @RequestParam String text,
+	public void generateQRCode(javax.servlet.http.HttpServletResponse response, @RequestParam String text,
 			@RequestParam(defaultValue = "350") int width, @RequestParam(defaultValue = "350") int height)
 			throws Exception {
 
@@ -261,14 +286,14 @@ public class ClienteRestController {
 		this.emailService.sendListEmail("alejandro12olea@gmail.com", path);
 	}
 
-	public void generarQR(Cliente cliente) throws Exception {
+	public void generarQR(Cliente cliente, int numControl) throws Exception {
 		String text = Long.toString(cliente.getId());
 		int width = 350;
 		int height = 350;
 
 		String path = qrCodeService.generateQRCode(text, width, height);
 
-		this.emailService.sendListEmail(cliente.getCorreo(), path);
+		this.emailService.sendListEmail(cliente.getCorreo(), path, numControl);
 	}
 
 	public static Date sumarDiasAFecha(int dias) {
