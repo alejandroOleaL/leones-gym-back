@@ -56,7 +56,7 @@ public class Cliente implements Serializable {
 	private Periodo periodo;
 	
 	@Column(name = "num_control")
-	private int numControl;
+	private String numControl;
 	
 	@Column(name = "dias_periodo")
 	private int diasPeriodo;
@@ -129,12 +129,12 @@ public class Cliente implements Serializable {
 	public void setPeriodo(Periodo periodo) {
 		this.periodo = periodo;
 	}
-	
-	public int getNumControl() {
+
+	public String getNumControl() {
 		return numControl;
 	}
 
-	public void setNumControl(int numControl) {
+	public void setNumControl(String numControl) {
 		this.numControl = numControl;
 	}
 

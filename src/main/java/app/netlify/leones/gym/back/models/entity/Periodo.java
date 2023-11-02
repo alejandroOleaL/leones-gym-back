@@ -24,6 +24,8 @@ public class Periodo implements Serializable {
 	private Long id;
 	
 	private int periodo;
+	
+	private String nombre;
 
 	public Long getId() {
 		return id;
@@ -39,6 +41,14 @@ public class Periodo implements Serializable {
 
 	public void setPeriodo(int periodo) {
 		this.periodo = periodo;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 
 }

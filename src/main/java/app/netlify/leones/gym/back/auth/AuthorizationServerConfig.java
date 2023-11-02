@@ -54,6 +54,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		tokenEnhancerChain.setTokenEnhancers(Arrays.asList(infoAdicionalToken, accessTokenConverter()));
 		
 		endpoints.authenticationManager(authenticationManager)
+		.tokenStore(tokenStore())
 		.accessTokenConverter(accessTokenConverter())
 		.tokenEnhancer(tokenEnhancerChain);
 	}
@@ -69,6 +70,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		jwtAccessTokenConverter.setSigningKey(JwtConfig.RSA_PRIVATE);	
 		jwtAccessTokenConverter.setVerifierKey(JwtConfig.RSA_PUBLIC);
 		return jwtAccessTokenConverter;
+	}
+	
+	public String crearPass(String password) {
+		System.out.println("inicia crear pass");
+		String passwordBcrypt = passwordEncoder.encode(password);
+		return passwordBcrypt;
 	}
 	
 	

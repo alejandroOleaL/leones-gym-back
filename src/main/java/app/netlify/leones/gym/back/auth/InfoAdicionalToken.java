@@ -11,13 +11,13 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Component;
 
 import app.netlify.leones.gym.back.models.entity.Usuario;
-import app.netlify.leones.gym.back.models.services.UsuarioService;
+import app.netlify.leones.gym.back.models.services.IUsuarioService;
 
 @Component
 public class InfoAdicionalToken implements TokenEnhancer {
 
 	@Autowired
-	private UsuarioService usuarioService;
+	private IUsuarioService usuarioService;
 	
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
@@ -27,6 +27,8 @@ public class InfoAdicionalToken implements TokenEnhancer {
 		info.put("info_adicional", "Hola que tal!: ".concat(authentication.getName()));
 		
 		info.put("nombre", usuario.getNombre());
+		info.put("apellidos", usuario.getApellidos());
+		info.put("email", usuario.getEmail());
 		
 		((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
 		return accessToken;

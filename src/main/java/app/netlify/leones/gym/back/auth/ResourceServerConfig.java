@@ -22,13 +22,18 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/leonesgym/clientes", "/leonesgym/clientes/page/**", "/leonesgym/uploads/img/**",
-				"/images/**").permitAll()
-		.antMatchers(HttpMethod.GET, "/leonesgym/clientes/{id}").hasAnyRole("USER", "ADMIN")
-		.antMatchers(HttpMethod.POST, "/leonesgym/upload").hasAnyRole("USER", "ADMIN")
-		.antMatchers(HttpMethod.POST, "/leonesgym/clientes").hasAnyRole("USER", "ADMIN")
-		.antMatchers(HttpMethod.PUT, "/leonesgym/clientes").hasAnyRole("USER", "ADMIN")
-		.antMatchers(HttpMethod.DELETE, "/leonesgym/clientes").hasRole("ADMIN")
-		.antMatchers("/leonesgym/clientes/**").hasAnyRole("USER", "ADMIN")
+				"/images/**", "/leonesgym/clientes/periodos", "/leonesgym/clientes/qr/{id}", "leonesgym/clientes/numero/control/{numcontrol}").permitAll()
+//		.antMatchers(HttpMethod.GET, "/leonesgym/clientes/{id}").hasAnyRole("USER", "ADMIN")
+//		.antMatchers(HttpMethod.POST, "/leonesgym/upload").hasAnyRole("USER", "ADMIN")
+		.antMatchers(HttpMethod.POST, "/leonesgym/clientes").permitAll()
+		.antMatchers(HttpMethod.GET, "/leonesgym/clientes/datos").permitAll()
+		.antMatchers(HttpMethod.POST, "/leonesgym/usuarios").permitAll()
+		.antMatchers(HttpMethod.GET, "/leonesgym/usuarios/page/**").permitAll()
+		.antMatchers(HttpMethod.GET, "/leonesgym/usuarios/roles").permitAll()
+		.antMatchers(HttpMethod.GET, "/leonesgym/usuarios/{id}").permitAll()
+		.antMatchers(HttpMethod.GET, "/leonesgym/historial/page/**").permitAll()
+//		.antMatchers(HttpMethod.PUT, "/leonesgym/clientes").hasAnyRole("USER", "ADMIN")
+//		.antMatchers(HttpMethod.DELETE, "/leonesgym/clientes").hasRole("ADMIN")
 		.anyRequest().authenticated()
 		.and().cors().configurationSource(corsConfigurationSource());
 	}

@@ -18,7 +18,19 @@ public interface IClienteDao extends JpaRepository<Cliente, Long>{
 	@Query("from Cliente c where c.fechaFin <= CURDATE()")
 	public Page<Cliente> findAllClientesVencidos(Pageable pageable);
 	
-	@Query("from Cliente c where c.numControl like %?1%")
+	@Query("SELECT COUNT(*) FROM Cliente c where c.fechaFin <= CURDATE()")
+	public int findCountClientesVencidos();
+	
+	@Query("SELECT COUNT(*) FROM Cliente c where c.fechaFin > CURDATE()")
+	public int findCountClientesActivos();
+	
+	@Query("SELECT COUNT(*) FROM Cliente")
+	public int findCountClientesTotal();
+	
+	@Query("SELECT c FROM Cliente c WHERE c.numControl = ?1")
 	public Cliente findByNumControl(String numControl);
+	
+	@Query("SELECT c FROM Cliente c WHERE c.telefono = ?1")
+	public Cliente findByTelefono(String telefono);
 
 }

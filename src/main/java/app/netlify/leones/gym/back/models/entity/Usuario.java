@@ -33,11 +33,13 @@ public class Usuario implements Serializable {
 
 	private Boolean enabled;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name="usuarios_roles", joinColumns= @JoinColumn(name="usuario_id"),
 	inverseJoinColumns=@JoinColumn(name="role_id"),
 	uniqueConstraints= {@UniqueConstraint(columnNames= {"usuario_id", "role_id"})})
 	private List<Role> roles;
+	
+	private String tipo;
 
 	public Long getId() {
 		return id;
@@ -101,6 +103,21 @@ public class Usuario implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	@Override
+	public String toString() {
+		return "Usuario [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", email=" + email
+				+ ", password=" + password + ", username=" + username + ", enabled=" + enabled + ", roles=" + roles
+				+ ", tipo=" + tipo + "]";
 	}
 
 }

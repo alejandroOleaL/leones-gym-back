@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,11 +26,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import app.netlify.leones.gym.back.models.entity.Cliente;
+import app.netlify.leones.gym.back.models.entity.Datos;
 import app.netlify.leones.gym.back.models.entity.Historial;
 import app.netlify.leones.gym.back.models.entity.Periodo;
 import app.netlify.leones.gym.back.models.services.EmailService;
@@ -38,7 +41,8 @@ import app.netlify.leones.gym.back.models.services.IHistorialService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
 import app.netlify.leones.gym.back.models.services.QRCodeService;
 
-@CrossOrigin(origins = { "http://localhost:4200" })
+@CrossOrigin(origins = {"http://localhost:4200"},
+methods= {RequestMethod.GET,RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 @RestController
 @RequestMapping("/leonesgym")
 public class ClienteRestController {
@@ -57,10 +61,26 @@ public class ClienteRestController {
 
 	@Autowired
 	private EmailService emailService;
+	
+	@GetMapping("/telefono/{telefono}")
+	public Cliente buscarPorTelefono(@PathVariable String telefono) {
+		return clienteService.findByTelefono(telefono);
+	}
 
 	@GetMapping("/clientes")
 	public List<Cliente> index() {
 		return clienteService.findAll();
+	}
+	
+	@GetMapping("/clientes/datos")
+	public Datos datos() {
+		Datos datos = new Datos();
+		datos.setId((long) 1);
+		datos.setVisitasHoy(historialService.findClientesVisitas());
+		datos.setInactivos(clienteService.findCountClientesVencidos());
+		datos.setActivos(clienteService.findCountClientesActivos());
+		datos.setTotal(clienteService.findCountClientesTotal());
+		return datos;
 	}
 
 	@GetMapping("/clientes/vencidos/{page}")
@@ -70,7 +90,7 @@ public class ClienteRestController {
 
 	@GetMapping("/historial/page/{page}")
 	public Page<Historial> historial(@PathVariable Integer page) {
-		return historialService.findAll(PageRequest.of(page, 3));
+		return historialService.findAll(PageRequest.of(page, 8));
 	}
 
 	@GetMapping("/clientes/page/{page}")
@@ -78,6 +98,7 @@ public class ClienteRestController {
 		return clienteService.findAll(PageRequest.of(page, 3));
 	}
 
+	@Secured({"ROLE_ADMIN", "ROLE_USER"})
 	@GetMapping("/clientes/{id}")
 	public ResponseEntity<?> verCliente(@PathVariable Long id) {
 		Cliente cliente = null;
@@ -98,10 +119,14 @@ public class ClienteRestController {
 
 	@GetMapping("/clientes/qr/{id}")
 	public ResponseEntity<?> mostrarCliente(@PathVariable Long id) {
-		Cliente cliente = null;
+		Cliente cliente;
 		Map<String, Object> response = new HashMap<>();
 		try {
+			
+			System.out.println("ID DEL CLIENTE****: " + id);
 			cliente = clienteService.findById(id);
+			
+			System.out.println(cliente);
 
 			Historial historial = new Historial();
 			historial.setCliente(cliente);
@@ -109,12 +134,22 @@ public class ClienteRestController {
 			historial.setFechaVisita(fechaHoy);
 			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 			historial.setHoraVisita(dateFormat.format(fechaHoy));
+
 			historialService.save(historial);
 
 			boolean estatus = validarEstatus(cliente);
 			cliente.setEstatus(estatus);
-
+			String nombreCompleto = cliente.getNombre() + " " + cliente.getApellidos();
+			String estado = null;
+			if(estatus == true) {
+				estado = "Activo";
+			}else {
+				estado = "Inactivo";
+			}
+			this.emailService.sendIngresoEmail("alejandro12olea@gmail.com", nombreCompleto, estado, cliente.getNumControl());
+			
 		} catch (Exception e) {
+			System.out.println(e);
 			response.put("mensaje", "Error al consultar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -129,14 +164,30 @@ public class ClienteRestController {
 		try {
 			cliente = clienteService.findByNumControl(numcontrol);
 
+			Historial historial = new Historial();
+			historial.setCliente(cliente);
+			Date fechaHoy = new Date();
+			historial.setFechaVisita(fechaHoy);
+			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+			historial.setHoraVisita(dateFormat.format(fechaHoy));
+
+			historialService.save(historial);
+
+			boolean estatus = validarEstatus(cliente);
+			cliente.setEstatus(estatus);
+			String nombreCompleto = cliente.getNombre() + " " + cliente.getApellidos();
+			String estado = null;
+			if(estatus == true) {
+				estado = "Activo";
+			}else {
+				estado = "Inactivo";
+			}
+			this.emailService.sendIngresoEmail("alejandro12olea@gmail.com", nombreCompleto, estado, cliente.getNumControl());
+			
 		} catch (Exception e) {
 			response.put("mensaje", "Error al consultar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		if (cliente == null) {
-			response.put("mensaje", "El cliente no existe en la base");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
 	}
@@ -146,10 +197,10 @@ public class ClienteRestController {
 		Cliente clienteNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
-			int numControl = (int) obtenerNumeroControl();
+			String numControl = obtenerNumeroControl();
 
 			Date fechaFin = new Date();
-			fechaFin = sumarDiasAFecha(cliente.getDiasPeriodo());
+			fechaFin = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
 			cliente.setFechaFin(fechaFin);
 			cliente.setNumControl(numControl);
 			cliente.setEstatus(true);
@@ -166,6 +217,7 @@ public class ClienteRestController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
+	@Secured({"ROLE_ADMIN", "ROLE_USER"})
 	@PutMapping("/clientes/{id}")
 	public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
 
@@ -204,6 +256,7 @@ public class ClienteRestController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
+	@Secured("ROLE_ADMIN")
 	@DeleteMapping("/clientes/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		Map<String, Object> response = new HashMap<>();
@@ -225,6 +278,7 @@ public class ClienteRestController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
+	@Secured({"ROLE_ADMIN", "ROLE_USER"})
 	@PostMapping("/clientes/upload")
 	public ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") Long id) {
 		Map<String, Object> response = new HashMap<>();
@@ -286,7 +340,7 @@ public class ClienteRestController {
 		this.emailService.sendListEmail("alejandro12olea@gmail.com", path);
 	}
 
-	public void generarQR(Cliente cliente, int numControl) throws Exception {
+	public void generarQR(Cliente cliente, String numControl) throws Exception {
 		String text = Long.toString(cliente.getId());
 		int width = 350;
 		int height = 350;
@@ -320,10 +374,10 @@ public class ClienteRestController {
 		return estatus;
 	}
 
-	public int obtenerNumeroControl() {
+	public String obtenerNumeroControl() {
 		int numControl = (int) (Math.random() * 9999 + 1);
-
-		return numControl;
+		String numCadena = String.valueOf(numControl);
+		return numCadena;
 	}
 
 }

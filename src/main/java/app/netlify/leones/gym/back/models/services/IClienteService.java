@@ -25,5 +25,13 @@ public interface IClienteService {
 	public Page<Cliente> findAllClientesVencidos(Pageable pageable);
 	
 	public Cliente findByNumControl(String id);
+	
+	public Cliente findByTelefono(String telefono);
+	
+	public int findCountClientesVencidos();
+	
+	public int findCountClientesActivos();
+	
+	public int findCountClientesTotal();
 
 }

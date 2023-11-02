@@ -1,8 +1,8 @@
-INSERT INTO periodos (id, periodo) VALUES(1, 7);
-INSERT INTO periodos (id, periodo) VALUES(2, 15);
-INSERT INTO periodos (id, periodo) VALUES(3, 30);
+INSERT INTO periodos (id, periodo, nombre) VALUES(1, 7, 'Semana');
+INSERT INTO periodos (id, periodo, nombre) VALUES(2, 15, 'Quincenal');
+INSERT INTO periodos (id, periodo, nombre) VALUES(3, 30, 'Mes');
 
-INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(1, 'alex', 'locia', '2023-08-08', '7471', 'alex@mail.com', '', 1203, 7, false);
+INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(1, 'alex', 'locia', '2023-11-08', '7471', 'alex@mail.com', '', 1203, 7, false);
 INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(2, 'bryan', 'lopez', '2023-09-22', '837636', 'bryan@mail.com', '', 1111, 15, false);
 INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(3, 'wilianismo', '',  '2023-03-12', '64747', 'wiliam@mail.com', '', 8621, 30, false);
 INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus) VALUES(3, 'andres', 'gracida', '2023-10-10', '7471', 'andres@mail.com', '', 0292, 7, true);
@@ -17,9 +17,32 @@ INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo
 
 INSERT INTO usuarios (nombre, apellidos, email, username, password, enabled) VALUES('supremo', 'kaiosama', 'sokaio@mail.com', 'supkaio', '$2a$10$lm8H0.J3pi1FpM3s3CUpe.Ym0FnlwHFclzGIGoWItLCN1vIFWEMmm', 1);
 INSERT INTO usuarios (nombre, apellidos, email, username, password, enabled) VALUES('andres', 'gordo', 'angor@mail.com', 'elgordo', '$2a$10$g2//5daw/XMhgjPbkryr7OL5h05zauUHrNhBL8ey6V0NNQHV/3dGm', 1);
+INSERT INTO usuarios (nombre, apellidos, email, username, password, enabled) VALUES('supremo2', 'kaiosama2', 'sokaio2@mail.com', 'supkaio2', '$2a$10$lm8H0.J3pi1FpM3s3CUpe.Ym0FnlwHFclzGIGoWItLCN1vIFWEMmm', 1);
+INSERT INTO usuarios (nombre, apellidos, email, username, password, enabled) VALUES('andres2', 'gordo2', 'angor2@mail.com', 'elgordo2', '$2a$10$g2//5daw/XMhgjPbkryr7OL5h05zauUHrNhBL8ey6V0NNQHV/3dGm', 1);
 
 INSERT INTO roles (nombre) VALUES ('ROLE_USER');
 INSERT INTO roles (nombre) VALUES ('ROLE_ADMIN');
 
 INSERT INTO usuarios_roles (usuario_id, role_id) VALUES(1, 1);
 INSERT INTO usuarios_roles (usuario_id, role_id) VALUES(2, 2);
+INSERT INTO usuarios_roles (usuario_id, role_id) VALUES(3, 1);
+INSERT INTO usuarios_roles (usuario_id, role_id) VALUES(4, 2);
+
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 1, '12:28:03');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 2, '10:28:03');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 3, '11:28:01');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 1, '09:11:21');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 2, '07:04:12');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 3, '06:21:00');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 4, '12:28:03');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 4, '10:28:03');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 5, '11:28:01');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 1, '09:11:21');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 6, '07:04:12');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 3, '06:21:00');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 6, '12:28:03');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 2, '10:28:03');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 4, '11:28:01');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 1, '09:11:21');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 5, '07:04:12');
+INSERT INTO historiales(fecha_visita, cliente_id, hora_visita) VALUES('2023-06-10', 3, '06:21:00');

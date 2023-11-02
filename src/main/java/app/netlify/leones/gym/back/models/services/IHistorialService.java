@@ -10,5 +10,7 @@ public interface IHistorialService {
 	public Page<Historial> findAll(Pageable pageable);
 	
 	public Historial save(Historial historial);
+	
+	public int findClientesVisitas();
 
 }

@@ -26,4 +26,9 @@ public class HistorialServiceImpl implements IHistorialService {
 		return historialDao.save(historial);
 	}
 
+	@Override
+	public int findClientesVisitas() {
+		return historialDao.findClientesVisitas();
+	}
+
 }
