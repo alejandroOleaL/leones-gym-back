@@ -41,7 +41,7 @@ import app.netlify.leones.gym.back.models.services.IHistorialService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
 import app.netlify.leones.gym.back.models.services.QRCodeService;
 
-@CrossOrigin(origins = {"http://localhost:4200", "*"},
+@CrossOrigin(origins = {"http://localhost:4200", "*", "https://leonesgym.web.app"},
 methods= {RequestMethod.GET,RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 @RestController
 @RequestMapping("/leonesgym")
