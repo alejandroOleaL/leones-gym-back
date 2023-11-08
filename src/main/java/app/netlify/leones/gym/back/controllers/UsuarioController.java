@@ -27,7 +27,7 @@ import app.netlify.leones.gym.back.models.entity.Role;
 import app.netlify.leones.gym.back.models.entity.Usuario;
 import app.netlify.leones.gym.back.models.services.IUserServiceImpl;
 
-@CrossOrigin(origins = {"http://localhost:4200", "*"})
+@CrossOrigin(origins = {"http://localhost:4200", "https://leonesgym.web.app"})
 @RestController
 @RequestMapping("/leonesgym")
 public class UsuarioController {
