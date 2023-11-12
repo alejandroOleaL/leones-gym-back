@@ -25,9 +25,7 @@ public class UploadFileServiceImpl implements IUploadFileService{
 	private final static String DIRECTORIO_UPLOAD = "uploads";
 
 	@Override
-	public Resource cargar(String nombreFoto) throws MalformedURLException {
-		log.info("nopmbrefto: " + nombreFoto);
-		
+	public Resource cargar(String nombreFoto) throws MalformedURLException {		
 		Path rutaArhivo = getPath(nombreFoto);
 		log.info(rutaArhivo.toString());
 		Resource recurso = new UrlResource(rutaArhivo.toUri());
