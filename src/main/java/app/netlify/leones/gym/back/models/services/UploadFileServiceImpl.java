@@ -15,6 +15,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import jdk.internal.org.jline.utils.Log;
+
 @Service
 public class UploadFileServiceImpl implements IUploadFileService{
 	
@@ -24,11 +26,17 @@ public class UploadFileServiceImpl implements IUploadFileService{
 
 	@Override
 	public Resource cargar(String nombreFoto) throws MalformedURLException {
+		log.info("nopmbrefto: " + nombreFoto);
+		
 		Path rutaArhivo = getPath(nombreFoto);
 		log.info(rutaArhivo.toString());
 		Resource recurso = new UrlResource(rutaArhivo.toUri());
 		
-		if(!recurso.exists() && !recurso.isReadable()) {
+		if(nombreFoto.equals("gatito")) {
+			rutaArhivo = Paths.get("src/main/resources/static/images").resolve("gatito.gif").toAbsolutePath();
+		
+			recurso = new UrlResource(rutaArhivo.toUri());
+		} else if(!recurso.exists() && !recurso.isReadable()) {
 			rutaArhivo = Paths.get("src/main/resources/static/images").resolve("no-usuario.png").toAbsolutePath();
 		
 			recurso = new UrlResource(rutaArhivo.toUri());
