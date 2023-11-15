@@ -33,4 +33,6 @@ public interface IClienteDao extends JpaRepository<Cliente, Long>{
 	@Query("SELECT c FROM Cliente c WHERE c.telefono = ?1")
 	public Cliente findByTelefono(String telefono);
 
+	@Query("SELECT COUNT(*) FROM Cliente c WHERE c.numControl = ?1")
+	public int findByNumeroControl(String numControl);
 }

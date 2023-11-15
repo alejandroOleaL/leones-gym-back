@@ -33,5 +33,7 @@ public interface IClienteService {
 	public int findCountClientesActivos();
 	
 	public int findCountClientesTotal();
+	
+	public int findByNumeroControl(String numControl);
 
 }
