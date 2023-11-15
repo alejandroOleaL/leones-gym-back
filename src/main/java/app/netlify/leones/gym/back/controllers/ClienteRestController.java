@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -371,6 +370,11 @@ public class ClienteRestController {
 	public String obtenerNumeroControl() {
 		int numControl = (int) (Math.random() * 9999 + 1);
 		String numCadena = String.valueOf(numControl);
+		int contador = clienteService.findByNumeroControl(numCadena);
+		if(contador>0 || numControl < 1000) {
+			System.out.println("Ya se encuentra o es menor a 1000");
+			obtenerNumeroControl();
+		}
 		return numCadena;
 	}
 
