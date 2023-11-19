@@ -2,8 +2,6 @@ package app.netlify.leones.gym.back.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import app.netlify.leones.gym.back.component.ClienteComponent;
 import app.netlify.leones.gym.back.models.entity.Cliente;
 import app.netlify.leones.gym.back.models.entity.Datos;
 import app.netlify.leones.gym.back.models.entity.Historial;
@@ -58,6 +57,9 @@ public class ClienteRestController {
 
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private ClienteComponent component;
 	
 	@GetMapping("/telefono/{telefono}")
 	public Cliente buscarPorTelefono(@PathVariable String telefono) {
@@ -119,31 +121,8 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			
-			System.out.println("ID DEL CLIENTE****: " + id);
-			cliente = clienteService.findById(id);
-			
-			System.out.println(cliente);
-
-			Historial historial = new Historial();
-			historial.setCliente(cliente);
-			Date fechaHoy = new Date();
-			historial.setFechaVisita(fechaHoy);
-			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-			historial.setHoraVisita(dateFormat.format(fechaHoy));
-
-			historialService.save(historial);
-
-			boolean estatus = validarEstatus(cliente);
-			cliente.setEstatus(estatus);
-			String nombreCompleto = cliente.getNombre() + " " + cliente.getApellidos();
-			String estado = null;
-			if(estatus == true) {
-				estado = "Activo";
-			}else {
-				estado = "Inactivo";
-			}
-			this.emailService.sendIngresoEmail("alejandro12olea@gmail.com", nombreCompleto, estado, cliente.getNumControl());
-			
+			cliente = component.validarEstatusId(id);
+						
 		} catch (Exception e) {
 			System.out.println(e);
 			response.put("mensaje", "Error al consultar la base de datos");
@@ -158,27 +137,7 @@ public class ClienteRestController {
 		Cliente cliente = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
-			cliente = clienteService.findByNumControl(numcontrol);
-
-			Historial historial = new Historial();
-			historial.setCliente(cliente);
-			Date fechaHoy = new Date();
-			historial.setFechaVisita(fechaHoy);
-			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-			historial.setHoraVisita(dateFormat.format(fechaHoy));
-
-			historialService.save(historial);
-
-			boolean estatus = validarEstatus(cliente);
-			cliente.setEstatus(estatus);
-			String nombreCompleto = cliente.getNombre() + " " + cliente.getApellidos();
-			String estado = null;
-			if(estatus == true) {
-				estado = "Activo";
-			}else {
-				estado = "Inactivo";
-			}
-			this.emailService.sendIngresoEmail("alejandro12olea@gmail.com", nombreCompleto, estado, cliente.getNumControl());
+			cliente = component.validarEstatus(numcontrol);
 			
 		} catch (Exception e) {
 			response.put("mensaje", "Error al consultar la base de datos");
@@ -368,10 +327,11 @@ public class ClienteRestController {
 	}
 
 	public String obtenerNumeroControl() {
-		int numControl = (int) (Math.random() * 9999 + 1);
+		double numCuatro = 1000 + Math.random() * 9000;
+        int numControl = (int) numCuatro;
 		String numCadena = String.valueOf(numControl);
 		int contador = clienteService.findByNumeroControl(numCadena);
-		if(contador>0 || numControl < 1000) {
+		if(contador>0) {
 			System.out.println("Ya se encuentra o es menor a 1000");
 			obtenerNumeroControl();
 		}

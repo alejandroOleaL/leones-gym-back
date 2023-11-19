@@ -5,17 +5,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Entity
@@ -35,10 +30,9 @@ public class Historial implements Serializable {
 	@Column(name = "fecha_visita")
 	private Date fechaVisita;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "cliente_id")
-	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-	private Cliente cliente;
+	private String nombre;
+	
+	private String apellidos;
 	
 	@Column(name = "hora_visita")
 	private String horaVisita;
@@ -59,12 +53,20 @@ public class Historial implements Serializable {
 		this.fechaVisita = fechaVisita;
 	}
 
-	public Cliente getCliente() {
-		return cliente;
+	public String getNombre() {
+		return nombre;
 	}
 
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getApellidos() {
+		return apellidos;
+	}
+
+	public void setApellidos(String apellidos) {
+		this.apellidos = apellidos;
 	}
 
 	public String getHoraVisita() {
