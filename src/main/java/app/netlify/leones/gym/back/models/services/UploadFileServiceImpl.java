@@ -28,17 +28,20 @@ public class UploadFileServiceImpl implements IUploadFileService{
 		log.info(rutaArhivo.toString());
 		Resource recurso = new UrlResource(rutaArhivo.toUri());
 		
-		if(nombreFoto.equals("gatito")) {
-			rutaArhivo = Paths.get("src/main/resources/static/images").resolve("gatito.gif").toAbsolutePath();
-		
-			recurso = new UrlResource(rutaArhivo.toUri());
-		} else if(!recurso.exists() && !recurso.isReadable()) {
+		if(!recurso.exists() && !recurso.isReadable()) {
 			rutaArhivo = Paths.get("src/main/resources/static/images").resolve("no-usuario.png").toAbsolutePath();
 		
 			recurso = new UrlResource(rutaArhivo.toUri());
 			
 			log.error("Error no se pudo cargar la imagen: " + nombreFoto);
 		}
+		
+		if(nombreFoto.equals("gatito")) {
+			rutaArhivo = Paths.get("src/main/resources/static/images").resolve("gatito.gif").toAbsolutePath();
+		
+			recurso = new UrlResource(rutaArhivo.toUri());
+		}
+		
 		return recurso;
 	}
 

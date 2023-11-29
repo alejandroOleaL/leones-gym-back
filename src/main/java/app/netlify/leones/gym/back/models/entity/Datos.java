@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "datos")
+//@Table(name = "datos")
 public class Datos implements Serializable {
 
 	/**
@@ -28,6 +28,8 @@ public class Datos implements Serializable {
 	private int activos;
 	
 	private int total;
+	
+	private int registros;
 
 	public Long getId() {
 		return id;
@@ -67,6 +69,14 @@ public class Datos implements Serializable {
 
 	public void setTotal(int total) {
 		this.total = total;
+	}
+
+	public int getRegistros() {
+		return registros;
+	}
+
+	public void setRegistros(int registros) {
+		this.registros = registros;
 	}
 
 	@Override

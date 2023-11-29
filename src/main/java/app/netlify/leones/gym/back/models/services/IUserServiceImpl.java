@@ -48,7 +48,7 @@ public class IUserServiceImpl implements IUsuarioService {
 
 	@Override
 	public Page<Usuario> findAll(Pageable pageable) {
-		return usuarioDao.findAll(pageable);
+		return usuarioDao.findAllUsers(pageable);
 	}
 
 	@Override

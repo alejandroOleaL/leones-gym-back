@@ -2,6 +2,8 @@ package app.netlify.leones.gym.back.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,14 +33,16 @@ import app.netlify.leones.gym.back.component.ClienteComponent;
 import app.netlify.leones.gym.back.models.entity.Cliente;
 import app.netlify.leones.gym.back.models.entity.Datos;
 import app.netlify.leones.gym.back.models.entity.Historial;
+import app.netlify.leones.gym.back.models.entity.Operacion;
 import app.netlify.leones.gym.back.models.entity.Periodo;
 import app.netlify.leones.gym.back.models.services.EmailService;
 import app.netlify.leones.gym.back.models.services.IClienteService;
 import app.netlify.leones.gym.back.models.services.IHistorialService;
+import app.netlify.leones.gym.back.models.services.IOperacionesService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
 import app.netlify.leones.gym.back.models.services.QRCodeService;
 
-@CrossOrigin(origins = {"http://localhost:4200", "https://leonesgym.web.app"})
+@CrossOrigin(origins = { "http://localhost:4200", "https://leonesgym.web.app" })
 @RestController
 @RequestMapping("/leonesgym")
 public class ClienteRestController {
@@ -57,10 +61,13 @@ public class ClienteRestController {
 
 	@Autowired
 	private EmailService emailService;
-	
+
 	@Autowired
 	private ClienteComponent component;
 	
+	@Autowired
+	private IOperacionesService operaciones;
+
 	@GetMapping("/telefono/{telefono}")
 	public Cliente buscarPorTelefono(@PathVariable String telefono) {
 		return clienteService.findByTelefono(telefono);
@@ -70,21 +77,21 @@ public class ClienteRestController {
 	public List<Cliente> index() {
 		return clienteService.findAll();
 	}
-	
+
 	@GetMapping("/clientes/datos")
 	public Datos datos() {
 		Datos datos = new Datos();
-		datos.setId((long) 1);
 		datos.setVisitasHoy(historialService.findClientesVisitas());
 		datos.setInactivos(clienteService.findCountClientesVencidos());
 		datos.setActivos(clienteService.findCountClientesActivos());
 		datos.setTotal(clienteService.findCountClientesTotal());
+		datos.setRegistros(clienteService.findCountClientesHoyRegistros());
 		return datos;
 	}
 
 	@GetMapping("/clientes/vencidos/{page}")
 	public Page<Cliente> clientesVencidos(@PathVariable Integer page) {
-		return clienteService.findAllClientesVencidos(PageRequest.of(page, 3));
+		return clienteService.findAllClientesVencidos(PageRequest.of(page, 8));
 	}
 
 	@GetMapping("/historial/page/{page}")
@@ -94,7 +101,17 @@ public class ClienteRestController {
 
 	@GetMapping("/clientes/page/{page}")
 	public Page<Cliente> index(@PathVariable Integer page) {
-		return clienteService.findAll(PageRequest.of(page, 3));
+		return clienteService.findAll(PageRequest.of(page, 8));
+	}
+	
+	@GetMapping("/clientes/registros/{page}")
+	public Page<Cliente> clientesRegistros(@PathVariable Integer page) {
+		return clienteService.findAllClientesRegistros(PageRequest.of(page, 8));
+	}
+	
+	@GetMapping("/operaciones/{page}")
+	public Page<Operacion> obtenerOperaciones(@PathVariable Integer page) {
+		return operaciones.findAll(PageRequest.of(page, 8));
 	}
 
 	@GetMapping("/clientes/{id}")
@@ -103,7 +120,7 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			cliente = clienteService.findById(id);
-			
+
 			boolean estatus = validarEstatus(cliente);
 			cliente.setEstatus(estatus);
 
@@ -120,9 +137,9 @@ public class ClienteRestController {
 		Cliente cliente;
 		Map<String, Object> response = new HashMap<>();
 		try {
-			
+
 			cliente = component.validarEstatusId(id);
-						
+
 		} catch (Exception e) {
 			System.out.println(e);
 			response.put("mensaje", "Error al consultar la base de datos");
@@ -138,7 +155,7 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			cliente = component.validarEstatus(numcontrol);
-			
+
 		} catch (Exception e) {
 			response.put("mensaje", "Error al consultar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -155,13 +172,45 @@ public class ClienteRestController {
 			String numControl = obtenerNumeroControl();
 
 			Date fechaFin = new Date();
-			fechaFin = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
-			cliente.setFechaFin(fechaFin);
+
+			if (cliente.getFechaInicio() != null) {
+				cliente.setFechaInicio(cliente.getFechaInicio());
+				cliente.setFechaFin(cliente.getFechaFin());
+				System.out.println("FechaInicio: " + cliente.getFechaInicio());
+			} else {
+				cliente.setFechaInicio(fechaFin);
+				switch (cliente.getPeriodo().getPeriodo()) {
+				case 7:
+					fechaFin = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+					break;
+				case 15:
+					fechaFin = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+					break;
+				case 30:
+					fechaFin = sumarMesAFecha(1);
+					break;
+				case 90:
+					fechaFin = sumarMesAFecha(3);
+					break;
+				case 180:
+					fechaFin = sumarMesAFecha(6);
+					break;
+				case 365:
+					fechaFin = sumarMesAFecha(12);
+					break;
+				default:
+				}
+				cliente.setFechaFin(fechaFin);
+			}
+
 			cliente.setNumControl(numControl);
 			cliente.setEstatus(true);
 
 			clienteNuevo = clienteService.save(cliente);
 			generarQR(clienteNuevo, numControl);
+			
+			String nombreCompleto = cliente.getNombre() + " " + cliente.getApellidos();
+			guardarOperacion("Registrar", cliente.getUsername(), nombreCompleto);
 		} catch (Exception e) {
 			response.put("mensaje", "Error al insertar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -187,19 +236,48 @@ public class ClienteRestController {
 			clienteActual.setNombre(cliente.getNombre());
 			clienteActual.setApellidos(cliente.getApellidos());
 			clienteActual.setCorreo(cliente.getCorreo());
-			clienteActual.setPeriodo(cliente.getPeriodo());
-
-			if (cliente.isEstatus() == false) {
+			System.out.println("FechaInicio: " + cliente.getFechaInicio());
+			
+			if (cliente.getFechaInicio() != null) {
+				clienteActual.setFechaInicio(cliente.getFechaInicio());
+				clienteActual.setFechaFin(cliente.getFechaFin());
+			} 
+			else if (cliente.isEstatus() == false) {
 				Date fechaActualizar = new Date();
+				clienteActual.setPeriodo(cliente.getPeriodo());
 				clienteActual.setFechaInicio(fechaActualizar);
-				fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+
+				switch (cliente.getPeriodo().getPeriodo()) {
+				case 7:
+					fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+					break;
+				case 15:
+					fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+					break;
+				case 30:
+					fechaActualizar = sumarMesAFecha(1);
+					break;
+				case 90:
+					fechaActualizar = sumarMesAFecha(3);
+					break;
+				case 180:
+					fechaActualizar = sumarMesAFecha(6);
+					break;
+				case 365:
+					fechaActualizar = sumarMesAFecha(12);
+					break;
+				default:
+				}
 
 				clienteActual.setFechaFin(fechaActualizar);
-				clienteActual.setEstatus(true);
 			}
 
-			clienteActualizado = clienteService.save(clienteActual);
+			clienteActual.setEstatus(true);
 
+			clienteActualizado = clienteService.save(clienteActual);
+			
+			String nombreCompleto = clienteActualizado.getNombre() + " " + clienteActualizado.getApellidos();
+			guardarOperacion("Actualizar", cliente.getUsername(), nombreCompleto);
 		} catch (Exception e) {
 			response.put("mensaje", "Error al actualizar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -313,6 +391,15 @@ public class ClienteRestController {
 		return calendar.getTime();
 	}
 
+	public static Date sumarMesAFecha(int meses) {
+		Date fecha = new Date();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(fecha);
+		calendar.add(Calendar.MONTH, meses);
+
+		return calendar.getTime();
+	}
+
 	public boolean validarEstatus(Cliente cliente) {
 		boolean estatus = true;
 		Date fechaHoy = new Date();
@@ -328,14 +415,26 @@ public class ClienteRestController {
 
 	public String obtenerNumeroControl() {
 		double numCuatro = 1000 + Math.random() * 9000;
-        int numControl = (int) numCuatro;
+		int numControl = (int) numCuatro;
 		String numCadena = String.valueOf(numControl);
 		int contador = clienteService.findByNumeroControl(numCadena);
-		if(contador>0) {
+		if (contador > 0) {
 			System.out.println("Ya se encuentra o es menor a 1000");
 			obtenerNumeroControl();
 		}
 		return numCadena;
+	}
+	
+	public void guardarOperacion(String tipoOperacion, String username, String cliente) {
+		Operacion operacion = new Operacion();
+		operacion.setTipoOperacion(tipoOperacion);
+		operacion.setUsername(username);
+		Date fechaHoy = new Date();
+		operacion.setFecha(fechaHoy);
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+		operacion.setHora(dateFormat.format(fechaHoy));
+		operacion.setCliente(cliente);
+		operaciones.save(operacion);
 	}
 
 }

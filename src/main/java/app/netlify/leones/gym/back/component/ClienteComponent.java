@@ -29,6 +29,7 @@ public class ClienteComponent {
 		Cliente cliente = null;
 		cliente = clienteService.findByNumControl(numControl);
 
+		//guardar esta visita
 		Historial historial = new Historial();
 		historial.setNombre(cliente.getNombre());
 		historial.setApellidos(cliente.getApellidos());
@@ -48,6 +49,7 @@ public class ClienteComponent {
 		}else {
 			estado = "Inactivo";
 		}
+		//mandar un correo que hubo in ingreso
 		this.emailService.sendIngresoEmail("alejandro12olea@gmail.com", nombreCompleto, estado, cliente.getNumControl());
 		
 		return cliente;

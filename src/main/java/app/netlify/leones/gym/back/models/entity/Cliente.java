@@ -63,10 +63,11 @@ public class Cliente implements Serializable {
 	
 	private boolean estatus;
 	
+	private String username;
+	
 	@PrePersist
 	public void prePersist() {
 		fechaRegistro = new Date();
-		fechaInicio = new Date();
 	}
 	
 	public Long getId() {
@@ -151,6 +152,14 @@ public class Cliente implements Serializable {
 
 	public void setEstatus(boolean estatus) {
 		this.estatus = estatus;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

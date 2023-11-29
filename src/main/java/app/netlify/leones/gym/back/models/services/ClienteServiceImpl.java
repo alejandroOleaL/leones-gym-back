@@ -88,5 +88,15 @@ public class ClienteServiceImpl implements IClienteService {
 	public int findByNumeroControl(String numControl) {
 		return clienteDao.findByNumeroControl(numControl);
 	}
+
+	@Override
+	public int findCountClientesHoyRegistros() {
+		return clienteDao.findCountClientesHoyRegistros();
+	}
+
+	@Override
+	public Page<Cliente> findAllClientesRegistros(Pageable pageable) {
+		return clienteDao.findAllClientesRegistros(pageable);
+	}
 	
 }

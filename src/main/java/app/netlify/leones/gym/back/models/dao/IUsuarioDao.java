@@ -2,6 +2,8 @@ package app.netlify.leones.gym.back.models.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -9,6 +11,9 @@ import app.netlify.leones.gym.back.models.entity.Role;
 import app.netlify.leones.gym.back.models.entity.Usuario;
 
 public interface IUsuarioDao extends JpaRepository<Usuario, Long>{
+	
+	@Query("SELECT u FROM Usuario u WHERE u.username != 'admin'")
+	public Page<Usuario> findAllUsers(Pageable pageable);
 	
 	public Usuario findByUsername(String username);
 	
