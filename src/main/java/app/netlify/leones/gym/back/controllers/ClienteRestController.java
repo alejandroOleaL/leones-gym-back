@@ -163,19 +163,35 @@ public class ClienteRestController {
 		}
 		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
 	}
+	
+	@GetMapping("/clientes/enviar/{id}")
+	public ResponseEntity<?> operaciones(@PathVariable Long id){
+		Cliente cliente = null;
+		Map<String, Object> response = new HashMap<>();
+		try {
+			System.out.println("ENTRA clientes enviar");
+			cliente = component.realizarOperaciones(id);
+
+		} catch (Exception e) {
+			response.put("mensaje", "Error al consultar la base de datos");
+			response.put("error", e.getMessage().concat(": "));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+	}
 
 	@PostMapping("/clientes")
 	public ResponseEntity<?> crear(@RequestBody Cliente cliente) {
 		Cliente clienteNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
-			String numControl = obtenerNumeroControl();
+			String numControl = obtenerNumeroControl();		
 
 			Date fechaFin = new Date();
 
 			if (cliente.getFechaInicio() != null) {
-				cliente.setFechaInicio(cliente.getFechaInicio());
-				cliente.setFechaFin(cliente.getFechaFin());
+				cliente.setFechaInicio(sumarHoras(cliente.getFechaInicio()));
+				cliente.setFechaFin(sumarHoras(cliente.getFechaFin()));
 				System.out.println("FechaInicio: " + cliente.getFechaInicio());
 			} else {
 				cliente.setFechaInicio(fechaFin);
@@ -239,8 +255,11 @@ public class ClienteRestController {
 			System.out.println("FechaInicio: " + cliente.getFechaInicio());
 			
 			if (cliente.getFechaInicio() != null) {
-				clienteActual.setFechaInicio(cliente.getFechaInicio());
-				clienteActual.setFechaFin(cliente.getFechaFin());
+				System.out.println("ENTRA A ACTUALIZA COMO SUPER ADMIN");
+				clienteActual.setFechaInicio(sumarHoras(cliente.getFechaInicio()));
+				clienteActual.setFechaFin(sumarHoras(cliente.getFechaFin()));
+				clienteActual.setEstatus(true);
+				System.out.println("Cliente: " + clienteActual);
 			} 
 			else if (cliente.isEstatus() == false) {
 				Date fechaActualizar = new Date();
@@ -270,9 +289,8 @@ public class ClienteRestController {
 				}
 
 				clienteActual.setFechaFin(fechaActualizar);
+				clienteActual.setEstatus(true);
 			}
-
-			clienteActual.setEstatus(true);
 
 			clienteActualizado = clienteService.save(clienteActual);
 			
@@ -397,6 +415,13 @@ public class ClienteRestController {
 		calendar.setTime(fecha);
 		calendar.add(Calendar.MONTH, meses);
 
+		return calendar.getTime();
+	}
+	
+	public static Date sumarHoras(Date fecha) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(fecha);
+		calendar.add(Calendar.HOUR, 12);
 		return calendar.getTime();
 	}
 

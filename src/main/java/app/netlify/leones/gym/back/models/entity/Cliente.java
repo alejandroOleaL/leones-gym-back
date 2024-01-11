@@ -162,4 +162,12 @@ public class Cliente implements Serializable {
 		this.username = username;
 	}
 
+	@Override
+	public String toString() {
+		return "Cliente [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", fechaRegistro="
+				+ fechaRegistro + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + ", telefono=" + telefono
+				+ ", correo=" + correo + ", foto=" + foto + ", periodo=" + periodo + ", numControl=" + numControl
+				+ ", diasPeriodo=" + diasPeriodo + ", estatus=" + estatus + ", username=" + username + "]";
+	}
+
 }
