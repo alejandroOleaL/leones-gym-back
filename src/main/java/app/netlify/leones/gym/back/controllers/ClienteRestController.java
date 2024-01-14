@@ -138,7 +138,7 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 
-			cliente = component.validarEstatusId(id);
+			cliente = clienteService.findById(id);
 
 		} catch (Exception e) {
 			System.out.println(e);
@@ -155,11 +155,15 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			cliente = component.validarEstatus(numcontrol);
-
+			System.out.println("CLIENTE1111: " + cliente);
+			
 		} catch (Exception e) {
 			response.put("mensaje", "Error al consultar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		if(cliente == null) {
+			
 		}
 		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
 	}
