@@ -201,22 +201,22 @@ public class ClienteRestController {
 				cliente.setFechaInicio(fechaFin);
 				switch (cliente.getPeriodo().getPeriodo()) {
 				case 7:
-					fechaFin = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+					fechaFin = sumarDiasAFecha(cliente.getPeriodo().getPeriodo(), cliente);
 					break;
 				case 15:
-					fechaFin = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+					fechaFin = sumarDiasAFecha(cliente.getPeriodo().getPeriodo(), cliente);
 					break;
 				case 30:
-					fechaFin = sumarMesAFecha(1);
+					fechaFin = sumarMesAFecha(1, cliente);
 					break;
 				case 90:
-					fechaFin = sumarMesAFecha(3);
+					fechaFin = sumarMesAFecha(3, cliente);
 					break;
 				case 180:
-					fechaFin = sumarMesAFecha(6);
+					fechaFin = sumarMesAFecha(6, cliente);
 					break;
 				case 365:
-					fechaFin = sumarMesAFecha(12);
+					fechaFin = sumarMesAFecha(12, cliente);
 					break;
 				default:
 				}
@@ -244,6 +244,7 @@ public class ClienteRestController {
 	@PutMapping("/clientes/{id}")
 	public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
 
+		System.out.println("Peticion Request: " + cliente);
 		Cliente clienteActual = clienteService.findById(id);
 		Map<String, Object> response = new HashMap<>();
 		Cliente clienteActualizado = null;
@@ -258,36 +259,36 @@ public class ClienteRestController {
 			clienteActual.setCorreo(cliente.getCorreo());
 			System.out.println("FechaInicio: " + cliente.getFechaInicio());
 			
-			if (cliente.getFechaInicio() != null) {
+			if (cliente.getUsername().equals("admin")) {
 				System.out.println("ENTRA A ACTUALIZA COMO SUPER ADMIN");
 				clienteActual.setFechaInicio(sumarHoras(cliente.getFechaInicio()));
 				clienteActual.setFechaFin(sumarHoras(cliente.getFechaFin()));
 				clienteActual.setEstatus(true);
 				System.out.println("Cliente: " + clienteActual);
 			} 
-			else if (cliente.isEstatus() == false) {
+			else if (cliente.isEstatus() == false || cliente.getRoleUser().equals("ROLE_ADMIN")) {
 				Date fechaActualizar = new Date();
 				clienteActual.setPeriodo(cliente.getPeriodo());
 				clienteActual.setFechaInicio(fechaActualizar);
 
 				switch (cliente.getPeriodo().getPeriodo()) {
 				case 7:
-					fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+					fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo(), cliente);
 					break;
 				case 15:
-					fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo());
+					fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo(), cliente);
 					break;
 				case 30:
-					fechaActualizar = sumarMesAFecha(1);
+					fechaActualizar = sumarMesAFecha(1, cliente);
 					break;
 				case 90:
-					fechaActualizar = sumarMesAFecha(3);
+					fechaActualizar = sumarMesAFecha(3, cliente);
 					break;
 				case 180:
-					fechaActualizar = sumarMesAFecha(6);
+					fechaActualizar = sumarMesAFecha(6, cliente);
 					break;
 				case 365:
-					fechaActualizar = sumarMesAFecha(12);
+					fechaActualizar = sumarMesAFecha(12, cliente);
 					break;
 				default:
 				}
@@ -402,10 +403,13 @@ public class ClienteRestController {
 		this.emailService.sendListEmail(cliente.getCorreo(), path, numControl);
 	}
 
-	public static Date sumarDiasAFecha(int dias) {
+	public static Date sumarDiasAFecha(int dias, Cliente cliente) {
 		Date fecha = new Date();
 		if (dias == 0) {
 			return fecha;
+		}
+		if(cliente.getFechaFin().before(fecha) && cliente.getRoleUser().equals("ROLE_ADMIN")) {
+			fecha = cliente.getFechaFin();
 		}
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(fecha);
@@ -413,8 +417,12 @@ public class ClienteRestController {
 		return calendar.getTime();
 	}
 
-	public static Date sumarMesAFecha(int meses) {
+	public static Date sumarMesAFecha(int meses, Cliente cliente) {
 		Date fecha = new Date();
+		if(!cliente.getFechaFin().before(fecha) && cliente.getRoleUser().equals("ROLE_ADMIN")) {
+			System.out.println("ENTRA A FECHA del cliente es menos a la de hoy");
+			fecha = cliente.getFechaFin();
+		}
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(fecha);
 		calendar.add(Calendar.MONTH, meses);
