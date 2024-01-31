@@ -67,6 +67,8 @@ public class Cliente implements Serializable {
 	
 	private String roleUser;
 	
+	private boolean existe;
+	
 	@PrePersist
 	public void prePersist() {
 		fechaRegistro = new Date();
@@ -172,13 +174,21 @@ public class Cliente implements Serializable {
 		this.roleUser = roleUser;
 	}
 
+	public boolean isExiste() {
+		return existe;
+	}
+
+	public void setExiste(boolean existe) {
+		this.existe = existe;
+	}
+
 	@Override
 	public String toString() {
 		return "Cliente [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", fechaRegistro="
 				+ fechaRegistro + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + ", telefono=" + telefono
 				+ ", correo=" + correo + ", foto=" + foto + ", periodo=" + periodo + ", numControl=" + numControl
 				+ ", diasPeriodo=" + diasPeriodo + ", estatus=" + estatus + ", username=" + username + ", roleUser="
-				+ roleUser + "]";
+				+ roleUser + ", existe=" + existe + "]";
 	}
 
 }

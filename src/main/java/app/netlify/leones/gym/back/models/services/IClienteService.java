@@ -26,6 +26,8 @@ public interface IClienteService {
 	
 	public Page<Cliente> findAllClientesVencidos(Pageable pageable);
 	
+	public Page<Cliente> findAllClientesActivos(Pageable pageable);
+	
 	public Cliente findByNumControl(String id);
 	
 	public Cliente findByTelefono(String telefono);

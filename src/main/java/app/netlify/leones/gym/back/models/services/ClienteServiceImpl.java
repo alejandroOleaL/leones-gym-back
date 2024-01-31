@@ -95,8 +95,15 @@ public class ClienteServiceImpl implements IClienteService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<Cliente> findAllClientesRegistros(Pageable pageable) {
 		return clienteDao.findAllClientesRegistros(pageable);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<Cliente> findAllClientesActivos(Pageable pageable) {
+		return clienteDao.findAllClientesActivos(pageable);
 	}
 	
 }

@@ -1,5 +1,7 @@
 package app.netlify.leones.gym.back.models.services;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,11 @@ public class HistorialServiceImpl implements IHistorialService {
 	@Override
 	public int findClientesVisitas() {
 		return historialDao.findClientesVisitas();
+	}
+
+	@Override
+	public void deleteHistorial(Date fecha) {
+		historialDao.deleteHistorial(fecha);
 	}
 
 }

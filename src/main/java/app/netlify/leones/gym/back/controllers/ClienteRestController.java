@@ -89,14 +89,24 @@ public class ClienteRestController {
 		return datos;
 	}
 
-	@GetMapping("/clientes/vencidos/{page}")
+	@GetMapping("/clientes/vencidos/page/{page}")
 	public Page<Cliente> clientesVencidos(@PathVariable Integer page) {
 		return clienteService.findAllClientesVencidos(PageRequest.of(page, 8));
+	}
+	
+	@GetMapping("/clientes/activos/page/{page}")
+	public Page<Cliente> clientesActivos(@PathVariable Integer page) {
+		return clienteService.findAllClientesActivos(PageRequest.of(page, 8));
 	}
 
 	@GetMapping("/historial/page/{page}")
 	public Page<Historial> historial(@PathVariable Integer page) {
-		return historialService.findAll(PageRequest.of(page, 8));
+		historialService.deleteHistorial(restarDiasAFecha(3));
+		
+		Page<Historial> historial = historialService.findAll(PageRequest.of(page, 8));
+		//Eliminar historial
+		
+		return historial;
 	}
 
 	@GetMapping("/clientes/page/{page}")
@@ -109,7 +119,7 @@ public class ClienteRestController {
 		return clienteService.findAllClientesRegistros(PageRequest.of(page, 8));
 	}
 	
-	@GetMapping("/operaciones/{page}")
+	@GetMapping("/operaciones/page/{page}")
 	public Page<Operacion> obtenerOperaciones(@PathVariable Integer page) {
 		return operaciones.findAll(PageRequest.of(page, 8));
 	}
@@ -155,16 +165,22 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			cliente = component.validarEstatus(numcontrol);
-			System.out.println("CLIENTE1111: " + cliente);
-			
+			if(cliente == null) {
+				System.out.println("CLIENTE ES NULLL: ");
+				cliente = new Cliente();
+				cliente.setExiste(false);
+				cliente.setId((long) 0);
+			}
+			else {
+				cliente.setExiste(true);
+			}
 		} catch (Exception e) {
 			response.put("mensaje", "Error al consultar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		if(cliente == null) {
-			
-		}
+		
+		System.out.println("CLIENTE1111: " + cliente);
 		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
 	}
 	
@@ -186,6 +202,7 @@ public class ClienteRestController {
 
 	@PostMapping("/clientes")
 	public ResponseEntity<?> crear(@RequestBody Cliente cliente) {
+		System.out.println("ENTRA A CREAR: " + cliente);
 		Cliente clienteNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
@@ -194,10 +211,12 @@ public class ClienteRestController {
 			Date fechaFin = new Date();
 
 			if (cliente.getFechaInicio() != null) {
+				System.out.println("ENTRA A como ADMIN SUPER: " + cliente);
 				cliente.setFechaInicio(sumarHoras(cliente.getFechaInicio()));
 				cliente.setFechaFin(sumarHoras(cliente.getFechaFin()));
 				System.out.println("FechaInicio: " + cliente.getFechaInicio());
 			} else {
+				System.out.println("ENTRA COMO USER: " + cliente);
 				cliente.setFechaInicio(fechaFin);
 				switch (cliente.getPeriodo().getPeriodo()) {
 				case 7:
@@ -220,9 +239,10 @@ public class ClienteRestController {
 					break;
 				default:
 				}
+				System.out.println("FechaFinSumar: " + fechaFin);
 				cliente.setFechaFin(fechaFin);
 			}
-
+			System.out.println("Datos cliente al: " + cliente);
 			cliente.setNumControl(numControl);
 			cliente.setEstatus(true);
 
@@ -269,8 +289,10 @@ public class ClienteRestController {
 			else if (cliente.isEstatus() == false || cliente.getRoleUser().equals("ROLE_ADMIN")) {
 				Date fechaActualizar = new Date();
 				clienteActual.setPeriodo(cliente.getPeriodo());
-				clienteActual.setFechaInicio(fechaActualizar);
-
+				if(cliente.getRoleUser().equals("ROLE_USER") || cliente.getFechaFin().before(fechaActualizar)) {
+					clienteActual.setFechaInicio(fechaActualizar);
+				}
+				
 				switch (cliente.getPeriodo().getPeriodo()) {
 				case 7:
 					fechaActualizar = sumarDiasAFecha(cliente.getPeriodo().getPeriodo(), cliente);
@@ -404,24 +426,39 @@ public class ClienteRestController {
 	}
 
 	public static Date sumarDiasAFecha(int dias, Cliente cliente) {
+		System.out.println("ENTRA A SUMAR FECHA: " + cliente);
 		Date fecha = new Date();
 		if (dias == 0) {
 			return fecha;
 		}
-		if(cliente.getFechaFin().before(fecha) && cliente.getRoleUser().equals("ROLE_ADMIN")) {
-			fecha = cliente.getFechaFin();
+		if(cliente.getRoleUser().equals("ROLE_ADMIN")) {
+			if(cliente.getFechaFin() !=null && cliente.getFechaFin().after(fecha)) {
+				fecha = cliente.getFechaFin();
+			}
 		}
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(fecha);
 		calendar.add(Calendar.DAY_OF_YEAR, dias);
 		return calendar.getTime();
 	}
+	
+	public static Date restarDiasAFecha(int dias) {
+		Date fecha = new Date();
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(fecha);
+		calendar.add(Calendar.DAY_OF_YEAR, -dias);
+		return calendar.getTime();
+	}
 
 	public static Date sumarMesAFecha(int meses, Cliente cliente) {
 		Date fecha = new Date();
-		if(!cliente.getFechaFin().before(fecha) && cliente.getRoleUser().equals("ROLE_ADMIN")) {
-			System.out.println("ENTRA A FECHA del cliente es menos a la de hoy");
-			fecha = cliente.getFechaFin();
+		if(cliente.getRoleUser().equals("ROLE_ADMIN")) {
+			System.out.println("ENTRA como ROLE_ADMIN: " + cliente);
+			if(cliente.getFechaFin() !=null && cliente.getFechaFin().after(fecha)) {
+				System.out.println("FECHA FIN ES ANTERIOR: " + cliente);
+				fecha = cliente.getFechaFin();
+			}
 		}
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(fecha);
