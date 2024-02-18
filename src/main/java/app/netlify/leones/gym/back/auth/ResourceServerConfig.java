@@ -38,6 +38,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		.antMatchers(HttpMethod.GET, "/leonesgym/clientes/enviar/**").permitAll()
 		.antMatchers(HttpMethod.GET, "/leonesgym/clientes/enviar/{id}").permitAll()
 		.antMatchers(HttpMethod.GET, "/leonesgym/usuarios/{id}").permitAll()
+		.antMatchers(HttpMethod.GET, "/leonesgym/ventas/{id}").permitAll()
+		.antMatchers(HttpMethod.GET, "/leonesgym/ventas/filtrar-productos/{nomb}").permitAll()
 		.antMatchers(HttpMethod.DELETE, "/leonesgym/usuarios/**").permitAll()
 		.antMatchers(HttpMethod.GET, "/leonesgym/historial/page/**").permitAll()
 //		.antMatchers(HttpMethod.PUT, "/leonesgym/clientes").hasAnyRole("USER", "ADMIN")
@@ -49,7 +51,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(Arrays.asList("http://localhost:4200", "https://leonesgym.web.app"));
+		config.setAllowedOrigins(Arrays.asList("http://localhost:4200", "https://leonesgym.web.app", "http://localhost:8090"));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		config.setAllowCredentials(true);
 		config.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));

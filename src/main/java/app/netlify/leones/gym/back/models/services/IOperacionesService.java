@@ -1,5 +1,7 @@
 package app.netlify.leones.gym.back.models.services;
 
+import java.util.Date;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,5 +16,7 @@ public interface IOperacionesService {
 	public Operacion save(Operacion operacion);
 	
 	public void delete(Long id);
+	
+	public void deleteOperacion(Date date);
 
 }

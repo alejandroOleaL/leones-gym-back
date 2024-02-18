@@ -36,6 +36,17 @@ public class Operacion implements Serializable{
 	private String hora;
 	
 	private String cliente;
+	
+	@Column(name = "cliente_actual")
+	private String clienteActual;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name = "fecha_fin")
+	private Date fechaFin;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name = "nueva_fecha")
+	private Date nuevaFecFin;
 
 	public Long getId() {
 		return id;
@@ -85,10 +96,35 @@ public class Operacion implements Serializable{
 		this.cliente = cliente;
 	}
 
+	public String getClienteActual() {
+		return clienteActual;
+	}
+
+	public void setClienteActual(String clienteActual) {
+		this.clienteActual = clienteActual;
+	}
+
+	public Date getFechaFin() {
+		return fechaFin;
+	}
+
+	public void setFechaFin(Date fechaFin) {
+		this.fechaFin = fechaFin;
+	}
+
+	public Date getNuevaFecFin() {
+		return nuevaFecFin;
+	}
+
+	public void setNuevaFecFin(Date nuevaFecFin) {
+		this.nuevaFecFin = nuevaFecFin;
+	}
+
 	@Override
 	public String toString() {
 		return "Operacion [id=" + id + ", username=" + username + ", tipoOperacion=" + tipoOperacion + ", fecha="
-				+ fecha + ", hora=" + hora + ", cliente=" + cliente + "]";
+				+ fecha + ", hora=" + hora + ", cliente=" + cliente + ", clienteActual=" + clienteActual + ", fechaFin="
+				+ fechaFin + ", nuevaFecFin=" + nuevaFecFin + "]";
 	}
 
 }

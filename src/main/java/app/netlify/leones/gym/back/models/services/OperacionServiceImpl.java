@@ -1,5 +1,7 @@
 package app.netlify.leones.gym.back.models.services;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +34,11 @@ public class OperacionServiceImpl implements IOperacionesService {
 	@Override
 	public void delete(Long id) {
 		operacionesDao.deleteById(id);
+	}
+
+	@Override
+	public void deleteOperacion(Date date) {
+		operacionesDao.deleteOperacion(date);
 	}
 
 }

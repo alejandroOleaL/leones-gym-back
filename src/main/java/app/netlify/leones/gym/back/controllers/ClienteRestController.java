@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -42,7 +43,7 @@ import app.netlify.leones.gym.back.models.services.IOperacionesService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
 import app.netlify.leones.gym.back.models.services.QRCodeService;
 
-@CrossOrigin(origins = { "http://localhost:4200", "https://leonesgym.web.app" })
+@CrossOrigin(origins = { "http://localhost:4200", "https://leonesgym.web.app", "http://localhost:8090" })
 @RestController
 @RequestMapping("/leonesgym")
 public class ClienteRestController {
@@ -121,6 +122,8 @@ public class ClienteRestController {
 	
 	@GetMapping("/operaciones/page/{page}")
 	public Page<Operacion> obtenerOperaciones(@PathVariable Integer page) {
+		operaciones.deleteOperacion(restarDiasAFecha(10));
+		
 		return operaciones.findAll(PageRequest.of(page, 8));
 	}
 
@@ -165,7 +168,7 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			cliente = component.validarEstatus(numcontrol);
-			if(cliente == null) {
+			if(cliente == null || Objects.isNull(cliente)) {
 				System.out.println("CLIENTE ES NULLL: ");
 				cliente = new Cliente();
 				cliente.setExiste(false);
@@ -250,7 +253,7 @@ public class ClienteRestController {
 			generarQR(clienteNuevo, numControl);
 			
 			String nombreCompleto = cliente.getNombre() + " " + cliente.getApellidos();
-			guardarOperacion("Registrar", cliente.getUsername(), nombreCompleto);
+			guardarOperacion("Registro", cliente, nombreCompleto, fechaFin);
 		} catch (Exception e) {
 			response.put("mensaje", "Error al insertar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -322,7 +325,7 @@ public class ClienteRestController {
 			clienteActualizado = clienteService.save(clienteActual);
 			
 			String nombreCompleto = clienteActualizado.getNombre() + " " + clienteActualizado.getApellidos();
-			guardarOperacion("Actualizar", cliente.getUsername(), nombreCompleto);
+			guardarOperacion("Modificación", cliente, nombreCompleto, cliente.getFechaFin());
 		} catch (Exception e) {
 			response.put("mensaje", "Error al actualizar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -499,15 +502,18 @@ public class ClienteRestController {
 		return numCadena;
 	}
 	
-	public void guardarOperacion(String tipoOperacion, String username, String cliente) {
+	public void guardarOperacion(String tipoOperacion, Cliente cliente, String nombre, Date fechaFin) {
 		Operacion operacion = new Operacion();
 		operacion.setTipoOperacion(tipoOperacion);
-		operacion.setUsername(username);
+		operacion.setUsername(cliente.getUsername());
 		Date fechaHoy = new Date();
 		operacion.setFecha(fechaHoy);
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		operacion.setHora(dateFormat.format(fechaHoy));
-		operacion.setCliente(cliente);
+		operacion.setCliente(cliente.getNombre() + " " + cliente.getApellidos());
+		operacion.setClienteActual(nombre);
+		operacion.setFechaFin(cliente.getFechaFin());
+		operacion.setNuevaFecFin(fechaFin);
 		operaciones.save(operacion);
 	}
 
