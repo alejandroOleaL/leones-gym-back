@@ -25,15 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.netlify.leones.gym.back.models.entity.Role;
 import app.netlify.leones.gym.back.models.entity.Usuario;
-import app.netlify.leones.gym.back.models.services.IUserServiceImpl;
+import app.netlify.leones.gym.back.models.services.UsuarioService;
 
-@CrossOrigin(origins = {"http://localhost:4200", "https://leonesgym.web.app"})
+@CrossOrigin(origins = {"http://localhost:4200", "https://leonesgym.web.app", "http://localhost:8090" })
 @RestController
 @RequestMapping("/leonesgym")
 public class UsuarioController {
 	
 	@Autowired
-	private IUserServiceImpl usuarioService;
+	private UsuarioService usuarioService;
 	private Usuario usuarioNuevo;
 	
 	@Autowired
@@ -71,6 +71,28 @@ public class UsuarioController {
 			response.put("mensaje", "El usuario no existe en la base");
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
+		response.put("mensaje", "El usuario se encontro con exito");
+		response.put("usuario", usuario);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/username/{username}")
+	public ResponseEntity<?> mostrarUsername(@PathVariable String username){
+		System.out.println("PathVariable: " + username);
+		Usuario usuario = null;
+		Map<String, Object> response = new HashMap<>();
+		try {
+			usuario = usuarioService.findByUsername(username);
+		} catch (Exception e) {
+			response.put("mensaje", "Error al consultar la base de datos");
+			response.put("error", e.getMessage().concat(": "));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		if(usuario == null) {
+			response.put("mensaje", "El usuario no existe en la base");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		System.out.println("USER: " + usuario.getUsername());
 		response.put("mensaje", "El usuario se encontro con exito");
 		response.put("usuario", usuario);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);

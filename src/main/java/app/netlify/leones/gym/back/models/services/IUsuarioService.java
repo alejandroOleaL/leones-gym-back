@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import app.netlify.leones.gym.back.models.entity.Producto;
 import app.netlify.leones.gym.back.models.entity.Role;
 import app.netlify.leones.gym.back.models.entity.Usuario;
+import app.netlify.leones.gym.back.models.entity.Venta;
 
 public interface IUsuarioService {
 
@@ -23,5 +25,21 @@ public interface IUsuarioService {
 	public void delete(Long id);
 	
 	public List<Role> findAllRoles();
+	
+	public Venta findVentaById(Long id);
+	
+	public Venta saveVenta(Venta venta);
+	
+	public void deleteVenta(Long id);
+	
+	public List<Producto> findProductoByNombre(String nomb);
+	
+	public Page<Producto> findProductoAll(Pageable pageable);
+	
+	public Producto saveProducto(Producto producto);
+	
+	public Producto findProductoById(Long id);
+	
+	public void deleteProducto(Long id);
 
 }

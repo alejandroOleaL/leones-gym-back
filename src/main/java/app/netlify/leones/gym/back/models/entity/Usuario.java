@@ -1,9 +1,12 @@
 package app.netlify.leones.gym.back.models.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "usuarios")
@@ -39,8 +42,16 @@ public class Usuario implements Serializable {
 	uniqueConstraints= {@UniqueConstraint(columnNames= {"usuario_id", "role_id"})})
 	private List<Role> roles;
 	
+	@JsonIgnoreProperties({"usuario", "hibernateLazyInitializer", "handler"})
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = CascadeType.ALL)
+	private List<Venta> ventas;
+	
 	private String tipo;
 
+	public Usuario() {
+		this.ventas = new ArrayList<>();
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -113,11 +124,19 @@ public class Usuario implements Serializable {
 		this.tipo = tipo;
 	}
 
-	@Override
-	public String toString() {
-		return "Usuario [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", email=" + email
-				+ ", password=" + password + ", username=" + username + ", enabled=" + enabled + ", roles=" + roles
-				+ ", tipo=" + tipo + "]";
+	public List<Venta> getVentas() {
+		return ventas;
 	}
+
+	public void setVentas(List<Venta> ventas) {
+		this.ventas = ventas;
+	}
+
+//	@Override
+//	public String toString() {
+//		return "Usuario [id=" + id + ", nombre=" + nombre + ", apellidos=" + apellidos + ", email=" + email
+//				+ ", password=" + password + ", username=" + username + ", enabled=" + enabled + ", roles=" + roles
+//				+ ", ventas=" + ventas + ", tipo=" + tipo + "]";
+//	}
 
 }

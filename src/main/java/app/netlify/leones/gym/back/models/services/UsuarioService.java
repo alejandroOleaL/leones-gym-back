@@ -17,9 +17,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import app.netlify.leones.gym.back.models.dao.IProductoDao;
 import app.netlify.leones.gym.back.models.dao.IUsuarioDao;
+import app.netlify.leones.gym.back.models.dao.IVentaDao;
+import app.netlify.leones.gym.back.models.entity.Producto;
 import app.netlify.leones.gym.back.models.entity.Role;
 import app.netlify.leones.gym.back.models.entity.Usuario;
+import app.netlify.leones.gym.back.models.entity.Venta;
 
 @Service
 public class UsuarioService implements IUsuarioService, UserDetailsService {
@@ -28,6 +32,12 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
 
 	@Autowired
 	private IUsuarioDao usuarioDao;
+	
+	@Autowired
+	private IVentaDao ventaDao;
+	
+	@Autowired
+	private IProductoDao productoDao;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -63,32 +73,68 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
 
 	@Override
 	public Page<Usuario> findAll(Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
+		return usuarioDao.findAll(pageable);
 	}
 
 	@Override
 	public Usuario findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return usuarioDao.findById(id).orElse(null);
 	}
 
 	@Override
-	public Usuario save(Usuario cliente) {
-		// TODO Auto-generated method stub
-		return null;
+	public Usuario save(Usuario usuario) {
+		return usuarioDao.save(usuario);
 	}
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
-		
+		usuarioDao.deleteById(id);
 	}
 
 	@Override
 	public List<Role> findAllRoles() {
-		// TODO Auto-generated method stub
-		return null;
+		return usuarioDao.findAllRoles();
+	}
+
+	@Override
+	public Venta findVentaById(Long id) {
+		return ventaDao.findById(id).orElse(null);
+	}
+
+	@Override
+	public Venta saveVenta(Venta venta) {
+		return ventaDao.save(venta);
+	}
+
+	@Override
+	public void deleteVenta(Long id) {
+		ventaDao.deleteById(id);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Producto> findProductoByNombre(String nomb) {
+		return productoDao.findByNombre(nomb);
+	}
+
+	@Override
+	public Page<Producto> findProductoAll(Pageable pageable) {
+		return productoDao.findAll(pageable);
+	}
+
+	@Override
+	public Producto saveProducto(Producto producto) {
+		return productoDao.save(producto);
+	}
+
+	@Override
+	public Producto findProductoById(Long id) {
+		return productoDao.findById(id).orElse(null);
+	}
+
+	@Override
+	public void deleteProducto(Long id) {
+		productoDao.deleteById(id);
 	}
 
 }

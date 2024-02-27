@@ -36,3 +36,13 @@ INSERT INTO historiales(fecha_visita, nombre, apellidos, hora_visita) VALUES('20
 INSERT INTO historiales(fecha_visita, nombre, apellidos, hora_visita) VALUES('2024-01-19', 'alex7', 'locia7', '');
 INSERT INTO historiales(fecha_visita, nombre, apellidos, hora_visita) VALUES('2024-01-18', 'alex8', 'locia8', '');
 INSERT INTO historiales(fecha_visita, nombre, apellidos, hora_visita) VALUES('2024-01-18', 'alex8', 'locia8', '');
+
+/* Productos */
+INSERT INTO productos(nombre, precio, stock, descripcion, fecha_registro) VALUES('Proteina 1', 1200, 5, 'Whey', NOW());
+INSERT INTO productos(nombre, precio, stock, descripcion, fecha_registro) VALUES('Creatina 1', 650, 3, 'Mono', NOW());
+INSERT INTO productos(nombre, precio, stock, descripcion, fecha_registro) VALUES('Aminoacidos 1', 800, 8, 'Bcas', NOW());
+
+INSERT INTO ventas(nota, fecha_venta, hora_venta, usuario_id) VALUES('Nota 1', NOW(), NOW(), 2);
+INSERT INTO detalle_ventas(cantidad, venta_id, producto_id) VALUES(2, 1, 1);
+INSERT INTO detalle_ventas(cantidad, venta_id, producto_id) VALUES(3, 1, 2);
+
