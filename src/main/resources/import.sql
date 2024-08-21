@@ -1,9 +1,10 @@
 INSERT INTO periodos (id, periodo, nombre) VALUES(1, 7, 'Semana');
 INSERT INTO periodos (id, periodo, nombre) VALUES(2, 15, 'Quincenal');
 INSERT INTO periodos (id, periodo, nombre) VALUES(3, 30, 'Mes');
-INSERT INTO periodos (id, periodo, nombre) VALUES(4, 90, 'Trimestre');
-INSERT INTO periodos (id, periodo, nombre) VALUES(5, 180, 'Semestre');
-INSERT INTO periodos (id, periodo, nombre) VALUES(6, 365, 'Anual');
+INSERT INTO periodos (id, periodo, nombre) VALUES(4, 60, 'Bimestre');
+INSERT INTO periodos (id, periodo, nombre) VALUES(5, 90, 'Trimestre');
+INSERT INTO periodos (id, periodo, nombre) VALUES(6, 180, 'Semestre');
+INSERT INTO periodos (id, periodo, nombre) VALUES(7, 365, 'Anual');
 
 INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus, username, role_user, existe) VALUES(1, 'alex', 'locia', '2024-01-18', '7471', 'alex@mail.com', '', 1203, 7, true, 'admin', 'ROLE_ADMIN', true);
 INSERT INTO clientes (periodo_id, nombre, apellidos, fecha_inicio, fecha_fin, telefono, correo, foto, num_control, dias_periodo, estatus, existe) VALUES(2, 'bryan', 'lopez', '2023-09-22', '2024-01-22', '837636', 'bryan@mail.com', '', 1111, 15, false, true);

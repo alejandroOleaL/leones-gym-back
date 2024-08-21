@@ -231,6 +231,9 @@ public class ClienteRestController {
 				case 30:
 					fechaFin = sumarMesAFecha(1, cliente);
 					break;
+				case 60:
+					fechaFin = sumarMesAFecha(2, cliente);
+					break;
 				case 90:
 					fechaFin = sumarMesAFecha(3, cliente);
 					break;
@@ -305,6 +308,9 @@ public class ClienteRestController {
 					break;
 				case 30:
 					fechaActualizar = sumarMesAFecha(1, cliente);
+					break;
+				case 60:
+					fechaActualizar = sumarMesAFecha(2, cliente);
 					break;
 				case 90:
 					fechaActualizar = sumarMesAFecha(3, cliente);
