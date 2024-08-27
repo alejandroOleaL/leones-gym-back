@@ -431,7 +431,10 @@ public class ClienteRestController {
 
 		String path = qrCodeService.generateQRCode(text, width, height);
 
-		this.emailService.sendListEmail(cliente.getCorreo(), path, numControl);
+		if(cliente.getCorreo() != null) {
+			this.emailService.sendListEmail(cliente.getCorreo(), path, numControl);
+		}
+		
 	}
 
 	public static Date sumarDiasAFecha(int dias, Cliente cliente) {
