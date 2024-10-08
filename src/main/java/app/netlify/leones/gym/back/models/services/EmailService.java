@@ -12,6 +12,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import app.netlify.leones.gym.back.models.entity.Cliente;
+
 @Service
 @Transactional
 public class EmailService {
@@ -23,15 +25,15 @@ public class EmailService {
 	private String email;
 	
 	
-	public void sendListEmail(String emailTo, String image, String numControl) {
+	public void sendListEmail(Cliente cliente, String image, String numControl) {
 		MimeMessage message = javaMailSender.createMimeMessage();
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setFrom(email);
-			helper.setTo(emailTo);
-			helper.setSubject("Listado");
+			helper.setTo(cliente.getCorreo());
+			helper.setSubject("Bienvenido " + cliente.getNombre() + " a Leones Gym!" );
 			helper.setText("Su registro ha sido exitoso");
-			helper.setText("Su numero de control es: " + numControl);
+			helper.setText("Su numero de control es: " + numControl + " tambien encontraras un codigo qr para tu ingreso.");
 			FileSystemResource file = new FileSystemResource(new File(image));
 			helper.addAttachment(image, file);
 
@@ -64,7 +66,7 @@ public class EmailService {
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setFrom(email);
-			helper.setTo(emailTo);
+			helper.setTo(email);
 			helper.setSubject("Se ha registrado un nuevo ingreso");
 			helper.setText("Ha ingresado el cliente: " + nombre + " con estatus: " + estatus + " y numero de control: " + numControl);
 

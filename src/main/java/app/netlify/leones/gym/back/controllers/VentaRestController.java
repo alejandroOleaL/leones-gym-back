@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.netlify.leones.gym.back.models.entity.DetalleVenta;
 import app.netlify.leones.gym.back.models.entity.Producto;
 import app.netlify.leones.gym.back.models.entity.Usuario;
 import app.netlify.leones.gym.back.models.entity.Venta;
@@ -35,7 +36,7 @@ public class VentaRestController {
 
 	@Autowired
 	private IUsuarioService userService;
-	
+
 	@Autowired
 	private UsuarioService usuarioService;
 
@@ -59,10 +60,16 @@ public class VentaRestController {
 	@PostMapping("/ventas")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Venta crear(@RequestBody Venta venta) {
-		System.out.println("VENTA::::::::::::: " + venta);
 		Usuario usuario = null;
 		usuario = usuarioService.findByUsername(venta.getUser());
 		venta.setUsuario(usuario);
+		for (DetalleVenta detalle : venta.getDetalles()) {
+			Producto producto = detalle.getProducto();
+			producto = userService.findProductoById(producto.getId());
+			Integer stock = producto.getStock();
+			producto.setStock(stock - detalle.getCantidad());
+			userService.saveProducto(producto);
+		}
 		return userService.saveVenta(venta);
 	}
 
@@ -94,29 +101,28 @@ public class VentaRestController {
 		response.put("producto", productoNuevo);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/productos/{id}")
 	public ResponseEntity<?> update(@Valid @RequestBody Producto producto, @PathVariable Long id) {
-		
+
 		Producto productoActual = userService.findProductoById(id);
 		Map<String, Object> response = new HashMap<>();
 		Producto productoActualizado = null;
-		
-		if(productoActual == null) {
+
+		if (productoActual == null) {
 			response.put("mensaje", "Error no se pudo editar el producto");
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
-		
+
 		try {
 			productoActual.setNombre(producto.getNombre());
 			productoActual.setDescripcion(producto.getDescripcion());
 			productoActual.setPrecio(producto.getPrecio());
 			productoActual.setStock(producto.getStock());
-			
+
 			productoActualizado = userService.saveProducto(productoActual);
-			
-		} 
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			response.put("mensaje", "Error al actualizar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -125,7 +131,7 @@ public class VentaRestController {
 		response.put("usuario", productoActualizado);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
-	
+
 	@DeleteMapping("/productos/{id}")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	public void deleteProducto(@PathVariable Long id) {

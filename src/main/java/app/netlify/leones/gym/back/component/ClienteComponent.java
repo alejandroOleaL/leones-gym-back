@@ -8,10 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import app.netlify.leones.gym.back.models.entity.Cliente;
+import app.netlify.leones.gym.back.models.entity.Datos;
 import app.netlify.leones.gym.back.models.entity.Historial;
+import app.netlify.leones.gym.back.models.entity.Precio;
 import app.netlify.leones.gym.back.models.services.EmailService;
 import app.netlify.leones.gym.back.models.services.IClienteService;
 import app.netlify.leones.gym.back.models.services.IHistorialService;
+import app.netlify.leones.gym.back.models.services.IPrecioService;
 
 @Component
 public class ClienteComponent {
@@ -24,6 +27,9 @@ public class ClienteComponent {
 	
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private IPrecioService precioService;
 	
 	public Cliente validarEstatus(String numControl) {
 		Cliente cliente = null;
@@ -104,6 +110,43 @@ public class ClienteComponent {
 			estatus = false;
 		}
 		return estatus;
+	}
+	
+	public Datos obtenerSaldos(Datos datos) {
+		Precio precioVisita = precioService.findById(1L);
+		int saldoVisita = (int) (datos.getVisitasHoyReg() * precioVisita.getPrecio());
+		datos.setVisitasSaldos(saldoVisita);
+		
+		Precio precioMes = precioService.findById(3L);
+		int saldoMes = (int) (datos.getRegistrosMes() * precioMes.getPrecio());
+		datos.setRegMesSaldos(saldoMes);
+		
+		Precio precioSemana = precioService.findById(2L);
+		int saldoSemana = (int) (datos.getRegistrosSemana() * precioSemana.getPrecio());
+		datos.setSemanaSaldos(saldoSemana);
+		
+		Precio precioQuincena = precioService.findById(4L);
+		int saldoQuincena = (int) (datos.getRegistrosQuincena() * precioQuincena.getPrecio());
+		datos.setQuincenaSaldos(saldoQuincena);
+		
+		Precio precioBimestre = precioService.findById(5L);
+		int saldoBimestre = (int) ((int) (datos.getRegistrosBimestre()) * precioBimestre.getPrecio());
+		datos.setBimestreSaldos(saldoBimestre);
+		
+		Precio precioTrimestre = precioService.findById(6L);
+		int saldoQTri = (int) (datos.getRegistrosTrimestre() * precioTrimestre.getPrecio());
+		datos.setTrimestreSaldos(saldoQTri);
+		
+		Precio precioSemestre = precioService.findById(7L);
+		int saldoSe = (int) (datos.getRegistrosSemestre() * precioSemestre.getPrecio());
+		datos.setSemestreSaldos(saldoSe);
+		
+		Precio precioAnual = precioService.findById(8L);
+		int saldoAnual = (int) (datos.getRegistrosAnual() * precioAnual.getPrecio());
+		datos.setAnualSaldos(saldoAnual);
+		
+		
+		return datos;
 	}
 	
 }

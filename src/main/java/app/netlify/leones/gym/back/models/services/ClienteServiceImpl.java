@@ -30,6 +30,11 @@ public class ClienteServiceImpl implements IClienteService {
 	public Page<Cliente> findAll(Pageable pageable) {
 		return clienteDao.findAll(pageable);
 	}
+	
+	@Override
+	public Page<Cliente> findAllClientesTodos(Pageable pageable) {
+		return clienteDao.findAllClientesTodos(pageable);
+	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -104,6 +109,46 @@ public class ClienteServiceImpl implements IClienteService {
 	@Transactional(readOnly = true)
 	public Page<Cliente> findAllClientesActivos(Pageable pageable) {
 		return clienteDao.findAllClientesActivos(pageable);
+	}
+
+	@Override
+	public int findCountVisitasHoy() {
+		return clienteDao.findCountVisitasHoy();
+	}
+
+	@Override
+	public int findCountMes() {
+		return clienteDao.findCountMes();
+	}
+
+	@Override
+	public int findCountSemana() {
+		return clienteDao.findCountSemana();
+	}
+
+	@Override
+	public int findCountQuincena() {
+		return clienteDao.findCountQuincena();
+	}
+
+	@Override
+	public int findCountBimestre() {
+		return clienteDao.findCountBimestre();
+	}
+
+	@Override
+	public int findCounttrimestre() {
+		return clienteDao.findCounttrimestre();
+	}
+
+	@Override
+	public int findCountSemestre() {
+		return clienteDao.findCountSemestre();
+	}
+
+	@Override
+	public int findCountAnual() {
+		return clienteDao.findCountAnual();
 	}
 	
 }

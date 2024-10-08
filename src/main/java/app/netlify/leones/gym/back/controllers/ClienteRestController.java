@@ -42,6 +42,7 @@ import app.netlify.leones.gym.back.models.services.IHistorialService;
 import app.netlify.leones.gym.back.models.services.IOperacionesService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
 import app.netlify.leones.gym.back.models.services.QRCodeService;
+import jdk.internal.org.jline.utils.Log;
 
 @CrossOrigin(origins = { "http://localhost:4200", "https://leonesgym.web.app", "http://localhost:8090" })
 @RestController
@@ -87,6 +88,15 @@ public class ClienteRestController {
 		datos.setActivos(clienteService.findCountClientesActivos());
 		datos.setTotal(clienteService.findCountClientesTotal());
 		datos.setRegistros(clienteService.findCountClientesHoyRegistros());
+		datos.setVisitasHoyReg(clienteService.findCountVisitasHoy());
+		datos.setRegistrosMes(clienteService.findCountMes());
+		datos.setRegistrosSemana(clienteService.findCountSemana());
+		datos.setRegistrosQuincena(clienteService.findCountQuincena());
+		datos.setRegistrosBimestre(clienteService.findCountBimestre());
+		datos.setRegistrosTrimestre(clienteService.findCounttrimestre());
+		datos.setRegistrosSemestre(clienteService.findCounttrimestre());
+		datos.setRegistrosAnual(clienteService.findCountAnual());
+		datos = component.obtenerSaldos(datos);
 		return datos;
 	}
 
@@ -112,7 +122,7 @@ public class ClienteRestController {
 
 	@GetMapping("/clientes/page/{page}")
 	public Page<Cliente> index(@PathVariable Integer page) {
-		return clienteService.findAll(PageRequest.of(page, 8));
+		return clienteService.findAllClientesTodos(PageRequest.of(page, 8));
 	}
 	
 	@GetMapping("/clientes/registros/{page}")
@@ -167,9 +177,9 @@ public class ClienteRestController {
 		Cliente cliente = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
+			
 			cliente = component.validarEstatus(numcontrol);
 			if(cliente == null || Objects.isNull(cliente)) {
-				System.out.println("CLIENTE ES NULLL: ");
 				cliente = new Cliente();
 				cliente.setExiste(false);
 				cliente.setId((long) 0);
@@ -182,8 +192,6 @@ public class ClienteRestController {
 			response.put("error", e.getMessage().concat(": "));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
-		System.out.println("CLIENTE1111: " + cliente);
 		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
 	}
 	
@@ -205,7 +213,6 @@ public class ClienteRestController {
 
 	@PostMapping("/clientes")
 	public ResponseEntity<?> crear(@RequestBody Cliente cliente) {
-		System.out.println("ENTRA A CREAR: " + cliente);
 		Cliente clienteNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
@@ -374,6 +381,7 @@ public class ClienteRestController {
 			try {
 				nombreArchivo = uploadService.copiar(archivo);
 			} catch (IOException e) {
+				System.out.println("ERR: " + e);
 				response.put("mensaje", "Error al subir la imagen: ");
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
@@ -392,9 +400,9 @@ public class ClienteRestController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/uploads/img/{nombreFoto:.+}")
+	@GetMapping("/uploads/img/{nombreFoto}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto) {
-
+		System.out.println("ENTRA A verFoto: " + nombreFoto);
 		Resource recurso = null;
 
 		try {
@@ -432,7 +440,7 @@ public class ClienteRestController {
 		String path = qrCodeService.generateQRCode(text, width, height);
 
 		if(cliente.getCorreo() != null) {
-			this.emailService.sendListEmail(cliente.getCorreo(), path, numControl);
+			this.emailService.sendListEmail(cliente, path, numControl);
 		}
 		
 	}
@@ -469,13 +477,14 @@ public class ClienteRestController {
 			System.out.println("ENTRA como ROLE_ADMIN: " + cliente);
 			if(cliente.getFechaFin() !=null && cliente.getFechaFin().after(fecha)) {
 				System.out.println("FECHA FIN ES ANTERIOR: " + cliente);
-				fecha = cliente.getFechaFin();
+				fecha = sumarHoras(cliente.getFechaFin());
 			}
 		}
+		System.out.println("FECHA A SUMAR: " + fecha);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(fecha);
 		calendar.add(Calendar.MONTH, meses);
-
+		System.out.println("FECHA FINAL: " + calendar.getTime());
 		return calendar.getTime();
 	}
 	

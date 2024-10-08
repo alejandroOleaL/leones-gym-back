@@ -27,7 +27,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 				"/leonesgym/clientes/numero/control/**", "/leonesgym/clientes/qr/**", "/leonesgym/clientes/registros/**",
 				"/leonesgym/clientes/**", "/leonesgym/clientes/enviar/**", "/leonesgym/clientes/enviar/{id}", 
 				"/leonesgym/clientes/vencidos/page/**", "/leonesgym/clientes/activos/page/**", "/leonesgym/clientes/{id}", "/leonesgym/productos/{id}",
-				"/leonesgym/operaciones/page/**").permitAll()
+				"/leonesgym/operaciones/page/**", "/leonesgym/precios/**").permitAll()
 		.antMatchers(HttpMethod.GET, "/leonesgym/clientes/{id}").hasAnyRole("USER", "ADMIN")
 		.antMatchers(HttpMethod.POST, "/leonesgym/upload").hasAnyRole("USER", "ADMIN")
 		.antMatchers(HttpMethod.POST, "/leonesgym/clientes").permitAll()
@@ -47,42 +47,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		.antMatchers(HttpMethod.GET, "/leonesgym/username/{username}").permitAll()
 		.antMatchers(HttpMethod.POST, "/leonesgym/productos").permitAll()
 		.antMatchers(HttpMethod.PUT, "/leonesgym/productos/{id}").permitAll()
+		.antMatchers(HttpMethod.PUT, "/leonesgym/precios/{id}").permitAll()
 		.antMatchers(HttpMethod.DELETE, "/leonesgym/productos/**").permitAll()
 		.antMatchers(HttpMethod.POST, "/leonesgym/ventas").permitAll()
 		.antMatchers(HttpMethod.PUT, "/leonesgym/clientes").hasAnyRole("USER", "ADMIN")
 		.antMatchers(HttpMethod.DELETE, "/leonesgym/clientes").hasRole("ADMIN")
-//		http.authorizeRequests().antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/clientes", "/leones-gym-back/leonesgym/clientes/page/**", 
-//				"/leones-gym-back/leonesgym/uploads/img/**",
-//				"/leones-gym-back/images/**", "/leones-gym-back/leonesgym/clientes/periodos", "/leones-gym-back/leonesgym/clientes/qr/{id}", 
-//				"/leones-gym-back/leonesgym/clientes/numero/control/{numcontrol}",
-//				"/leones-gym-back/leonesgym/clientes/numero/control/**", "/leones-gym-back/leonesgym/clientes/qr/**", "/leones-gym-back/leonesgym/clientes/registros/**",
-//				"/leones-gym-back/leonesgym/clientes/**", "/leones-gym-back/leonesgym/clientes/enviar/**", "/leones-gym-back/leonesgym/clientes/enviar/{id}", 
-//				"/leones-gym-back/leonesgym/clientes/vencidos/page/**", "/leones-gym-back/leonesgym/clientes/activos/page/**", "/leones-gym-back/leonesgym/clientes/{id}", 
-//				"/leones-gym-back/leonesgym/productos/{id}",
-//				"/leones-gym-back/leonesgym/operaciones/page/**").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/clientes/{id}").hasAnyRole("USER", "ADMIN")
-//		.antMatchers(HttpMethod.POST, "/leones-gym-back/leonesgym/upload").hasAnyRole("USER", "ADMIN")
-//		.antMatchers(HttpMethod.POST, "/leones-gym-back/leonesgym/clientes").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/clientes/datos").permitAll()
-//		.antMatchers(HttpMethod.POST, "/leones-gym-back/leonesgym/usuarios").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/usuarios/page/**").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/usuarios/roles").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/usuarios/**").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/clientes/enviar/**").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/clientes/enviar/{id}").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/usuarios/{id}").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/ventas/{id}").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/ventas/filtrar-productos/{nomb}").permitAll()
-//		.antMatchers(HttpMethod.DELETE, "/leones-gym-back/leonesgym/usuarios/**").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/historial/page/**").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/productos/page/**").permitAll()
-//		.antMatchers(HttpMethod.GET, "/leones-gym-back/leonesgym/username/{username}").permitAll()
-//		.antMatchers(HttpMethod.POST, "/leones-gym-back/leonesgym/productos").permitAll()
-//		.antMatchers(HttpMethod.PUT, "/leones-gym-back/leonesgym/productos/{id}").permitAll()
-//		.antMatchers(HttpMethod.DELETE, "/leones-gym-back/leonesgym/productos/**").permitAll()
-//		.antMatchers(HttpMethod.POST, "/leones-gym-back/leonesgym/ventas").permitAll()
-//		.antMatchers(HttpMethod.PUT, "/leones-gym-back/leonesgym/clientes").hasAnyRole("USER", "ADMIN")
-//		.antMatchers(HttpMethod.DELETE, "/leones-gym-back/leonesgym/clientes").hasRole("ADMIN")
 		.anyRequest().authenticated()
 		.and().cors().configurationSource(corsConfigurationSource());
 	}

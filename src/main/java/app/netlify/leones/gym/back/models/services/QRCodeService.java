@@ -16,8 +16,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
 public class QRCodeService {
 
 	public String generateQRCode(String text, int width, int height) {
-		String qrCodePath = "./src/main/resources/qrcodes/";
+		String qrCodePath = "src/main/resources/static/images";
 		String qrCodeName = qrCodePath + text + "-QRCODE.png";
+		//AGREGAR LOG PARA VER EL NOMBRE Y ELIMINAR
 		QRCodeWriter qrCodeWriter = new QRCodeWriter();
 		try {
 			BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
