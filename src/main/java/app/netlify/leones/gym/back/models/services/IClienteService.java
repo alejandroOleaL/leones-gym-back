@@ -1,5 +1,6 @@
 package app.netlify.leones.gym.back.models.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -46,17 +47,17 @@ public interface IClienteService {
 	
 	public int findCountVisitasHoy();
 	
-	public int findCountMes();
+	public int findCountMes(Date fecha);
 	
-	public int findCountSemana();
+	public int findCountSemana(Date fecha);
 
-	public int findCountQuincena();
+	public int findCountQuincena(Date fecha);
 	
-	public int findCountBimestre();
+	public int findCountBimestre(Date fecha);
 	
-	public int findCounttrimestre();
+	public int findCounttrimestre(Date fecha);
 	
-	public int findCountSemestre();
+	public int findCountSemestre(Date fecha);
 	
-	public int findCountAnual();
+	public int findCountAnual(Date fecha);
 }

@@ -9,7 +9,7 @@ import app.netlify.leones.gym.back.models.entity.Producto;
 
 public interface IProductoDao extends JpaRepository<Producto, Long>{
 
-	@Query("select p from Producto p where p.nombre like %?1%")
+	@Query("select p from Producto p where p.nombre like %?1% AND p.stock > 0")
 	public List<Producto> findByNombre(String nomb);
 	
 	public List<Producto> findByNombreContainingIgnoreCase(String nomb);

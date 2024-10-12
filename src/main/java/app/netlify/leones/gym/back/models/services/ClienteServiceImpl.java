@@ -1,5 +1,6 @@
 package app.netlify.leones.gym.back.models.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,38 +118,38 @@ public class ClienteServiceImpl implements IClienteService {
 	}
 
 	@Override
-	public int findCountMes() {
-		return clienteDao.findCountMes();
+	public int findCountMes(Date fecha) {
+		return clienteDao.findCountMes(fecha);
 	}
 
 	@Override
-	public int findCountSemana() {
-		return clienteDao.findCountSemana();
+	public int findCountSemana(Date fecha) {
+		return clienteDao.findCountSemana(fecha);
 	}
 
 	@Override
-	public int findCountQuincena() {
-		return clienteDao.findCountQuincena();
+	public int findCountQuincena(Date fecha) {
+		return clienteDao.findCountQuincena(fecha);
 	}
 
 	@Override
-	public int findCountBimestre() {
-		return clienteDao.findCountBimestre();
+	public int findCountBimestre(Date fecha) {
+		return clienteDao.findCountBimestre(fecha);
 	}
 
 	@Override
-	public int findCounttrimestre() {
-		return clienteDao.findCounttrimestre();
+	public int findCounttrimestre(Date fecha) {
+		return clienteDao.findCounttrimestre(fecha);
 	}
 
 	@Override
-	public int findCountSemestre() {
-		return clienteDao.findCountSemestre();
+	public int findCountSemestre(Date fecha) {
+		return clienteDao.findCountSemestre(fecha);
 	}
 
 	@Override
-	public int findCountAnual() {
-		return clienteDao.findCountAnual();
+	public int findCountAnual(Date fecha) {
+		return clienteDao.findCountAnual(fecha);
 	}
 	
 }

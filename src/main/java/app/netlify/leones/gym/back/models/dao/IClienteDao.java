@@ -1,5 +1,6 @@
 package app.netlify.leones.gym.back.models.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -53,30 +54,30 @@ public interface IClienteDao extends JpaRepository<Cliente, Long>{
 	@Query("SELECT COUNT(*) FROM Historial h where h.fechaVisita = CURDATE() AND h.nombre = 'Visita'")
 	public int findCountVisitasHoy();
 	
-	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 3")
-	public int findCountMes();
+	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 3 AND c.fechaRegistro > ?1")
+	public int findCountMes(Date fecha);
 	
 	//0btener semana
-	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 1")
-	public int findCountSemana();
+	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 1 AND c.fechaRegistro > ?1")
+	public int findCountSemana(Date fecha);
 	
 	//0btener quincena
-	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 2")
-	public int findCountQuincena();
+	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 2 AND c.fechaRegistro > ?1")
+	public int findCountQuincena(Date fecha);
 	
 	//0btener bimestre
-	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 4")
-	public int findCountBimestre();
+	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 4 AND c.fechaRegistro > ?1")
+	public int findCountBimestre(Date fecha);
 	
 	//0btener trimestre
-	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 5")
-	public int findCounttrimestre();
+	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 5 AND c.fechaRegistro > ?1")
+	public int findCounttrimestre(Date fecha);
 		
 	//0btener semestre
-	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 6")
-	public int findCountSemestre();
+	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 6 AND c.fechaRegistro > ?1")
+	public int findCountSemestre(Date fecha);
 	
 	//0btener anual
-	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 7")
-	public int findCountAnual();
+	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 7 AND c.fechaRegistro > ?1")
+	public int findCountAnual(Date fecha);
 }

@@ -89,13 +89,17 @@ public class ClienteRestController {
 		datos.setTotal(clienteService.findCountClientesTotal());
 		datos.setRegistros(clienteService.findCountClientesHoyRegistros());
 		datos.setVisitasHoyReg(clienteService.findCountVisitasHoy());
-		datos.setRegistrosMes(clienteService.findCountMes());
-		datos.setRegistrosSemana(clienteService.findCountSemana());
-		datos.setRegistrosQuincena(clienteService.findCountQuincena());
-		datos.setRegistrosBimestre(clienteService.findCountBimestre());
-		datos.setRegistrosTrimestre(clienteService.findCounttrimestre());
-		datos.setRegistrosSemestre(clienteService.findCounttrimestre());
-		datos.setRegistrosAnual(clienteService.findCountAnual());
+		
+		int count = clienteService.findCountMes(restarDiasAFecha(31));
+		System.out.println("REGISTROS MES: " + count);
+		datos.setRegistrosMes(count);
+		
+		datos.setRegistrosSemana(clienteService.findCountSemana(restarDiasAFecha(31)));
+		datos.setRegistrosQuincena(clienteService.findCountQuincena(restarDiasAFecha(31)));
+		datos.setRegistrosBimestre(clienteService.findCountBimestre(restarDiasAFecha(31)));
+		datos.setRegistrosTrimestre(clienteService.findCounttrimestre(restarDiasAFecha(31)));
+		datos.setRegistrosSemestre(clienteService.findCounttrimestre(restarDiasAFecha(31)));
+		datos.setRegistrosAnual(clienteService.findCountAnual(restarDiasAFecha(31)));
 		datos = component.obtenerSaldos(datos);
 		return datos;
 	}
@@ -132,7 +136,7 @@ public class ClienteRestController {
 	
 	@GetMapping("/operaciones/page/{page}")
 	public Page<Operacion> obtenerOperaciones(@PathVariable Integer page) {
-		operaciones.deleteOperacion(restarDiasAFecha(10));
+		operaciones.deleteOperacion(restarDiasAFecha(31));
 		
 		return operaciones.findAll(PageRequest.of(page, 8));
 	}
@@ -277,7 +281,6 @@ public class ClienteRestController {
 	@PutMapping("/clientes/{id}")
 	public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
 
-		System.out.println("Peticion Request: " + cliente);
 		Cliente clienteActual = clienteService.findById(id);
 		Map<String, Object> response = new HashMap<>();
 		Cliente clienteActualizado = null;
@@ -297,6 +300,7 @@ public class ClienteRestController {
 				clienteActual.setFechaInicio(sumarHoras(cliente.getFechaInicio()));
 				clienteActual.setFechaFin(sumarHoras(cliente.getFechaFin()));
 				clienteActual.setEstatus(true);
+				clienteActual.setPeriodo(cliente.getPeriodo());
 				System.out.println("Cliente: " + clienteActual);
 			} 
 			else if (cliente.isEstatus() == false || cliente.getRoleUser().equals("ROLE_ADMIN")) {
@@ -332,9 +336,11 @@ public class ClienteRestController {
 				}
 
 				clienteActual.setFechaFin(fechaActualizar);
-				clienteActual.setEstatus(true);
+				
 			}
 
+			clienteActual.setEstatus(true);
+			clienteActual.setFechaRegistro(new Date());
 			clienteActualizado = clienteService.save(clienteActual);
 			
 			String nombreCompleto = clienteActualizado.getNombre() + " " + clienteActualizado.getApellidos();
@@ -420,6 +426,16 @@ public class ClienteRestController {
 	@GetMapping("/clientes/periodos")
 	public List<Periodo> listarPeriodos() {
 		return clienteService.findAllPeriodos();
+	}
+	
+	@GetMapping("/registra/operacion/{username}")
+	public ResponseEntity<?> listarPeriodos(@PathVariable String username) {
+		System.out.println("USUARIO: " + username);
+		Map<String, Object> response = new HashMap<>();
+		Cliente cliente = component.validarEstatus("101");
+		guardarOperacionVisita("Visita pagada", cliente, username, new Date());
+		response.put("mensaje", "Se ha registrado operacion con exito");
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/v1/qrcode")
@@ -523,13 +539,33 @@ public class ClienteRestController {
 	public void guardarOperacion(String tipoOperacion, Cliente cliente, String nombre, Date fechaFin) {
 		Operacion operacion = new Operacion();
 		operacion.setTipoOperacion(tipoOperacion);
-		operacion.setUsername(cliente.getUsername());
+		if(nombre.equals("101")) {
+			operacion.setUsername(nombre);
+		}
+		else {
+			operacion.setUsername(cliente.getUsername());
+		}
 		Date fechaHoy = new Date();
 		operacion.setFecha(fechaHoy);
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		operacion.setHora(dateFormat.format(fechaHoy));
 		operacion.setCliente(cliente.getNombre() + " " + cliente.getApellidos());
 		operacion.setClienteActual(nombre);
+		operacion.setFechaFin(cliente.getFechaFin());
+		operacion.setNuevaFecFin(fechaFin);
+		operaciones.save(operacion);
+	}
+	
+	public void guardarOperacionVisita(String tipoOperacion, Cliente cliente, String username, Date fechaFin) {
+		Operacion operacion = new Operacion();
+		operacion.setTipoOperacion(tipoOperacion);
+		operacion.setUsername(username);
+		Date fechaHoy = new Date();
+		operacion.setFecha(fechaHoy);
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+		operacion.setHora(dateFormat.format(fechaHoy));
+		operacion.setCliente("Visita Pagada");
+		operacion.setClienteActual("");
 		operacion.setFechaFin(cliente.getFechaFin());
 		operacion.setNuevaFecFin(fechaFin);
 		operaciones.save(operacion);
