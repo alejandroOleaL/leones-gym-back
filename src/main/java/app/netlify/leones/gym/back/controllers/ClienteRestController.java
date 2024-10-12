@@ -228,7 +228,9 @@ public class ClienteRestController {
 				System.out.println("ENTRA A como ADMIN SUPER: " + cliente);
 				cliente.setFechaInicio(sumarHoras(cliente.getFechaInicio()));
 				cliente.setFechaFin(sumarHoras(cliente.getFechaFin()));
-				System.out.println("FechaInicio: " + cliente.getFechaInicio());
+				Periodo periodo = new Periodo();
+				periodo.setId(8L);
+				cliente.setPeriodo(periodo);
 			} else {
 				System.out.println("ENTRA COMO USER: " + cliente);
 				cliente.setFechaInicio(fechaFin);
@@ -300,7 +302,9 @@ public class ClienteRestController {
 				clienteActual.setFechaInicio(sumarHoras(cliente.getFechaInicio()));
 				clienteActual.setFechaFin(sumarHoras(cliente.getFechaFin()));
 				clienteActual.setEstatus(true);
-				clienteActual.setPeriodo(cliente.getPeriodo());
+				Periodo periodo = new Periodo();
+				periodo.setId(8L);
+				clienteActual.setPeriodo(periodo);
 				System.out.println("Cliente: " + clienteActual);
 			} 
 			else if (cliente.isEstatus() == false || cliente.getRoleUser().equals("ROLE_ADMIN")) {
