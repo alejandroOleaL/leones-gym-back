@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import app.netlify.leones.gym.back.models.entity.Cliente;
 import app.netlify.leones.gym.back.models.entity.Producto;
 import app.netlify.leones.gym.back.models.entity.Role;
 import app.netlify.leones.gym.back.models.entity.Usuario;
@@ -41,5 +42,9 @@ public interface IUsuarioService {
 	public Producto findProductoById(Long id);
 	
 	public void deleteProducto(Long id);
+	
+	public Usuario findByUsuarioCorreo(String correo);
+	
+	public Usuario findByUserId(Long id);
 
 }

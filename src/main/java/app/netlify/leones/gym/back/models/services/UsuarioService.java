@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import app.netlify.leones.gym.back.models.dao.IProductoDao;
 import app.netlify.leones.gym.back.models.dao.IUsuarioDao;
 import app.netlify.leones.gym.back.models.dao.IVentaDao;
+import app.netlify.leones.gym.back.models.entity.Cliente;
 import app.netlify.leones.gym.back.models.entity.Producto;
 import app.netlify.leones.gym.back.models.entity.Role;
 import app.netlify.leones.gym.back.models.entity.Usuario;
@@ -135,6 +136,16 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
 	@Override
 	public void deleteProducto(Long id) {
 		productoDao.deleteById(id);
+	}
+
+	@Override
+	public Usuario findByUsuarioCorreo(String correo) {
+		return usuarioDao.findByUsuarioCorreo(correo);
+	}
+
+	@Override
+	public Usuario findByUserId(Long id) {
+		return usuarioDao.findByUserId(id);
 	}
 
 }

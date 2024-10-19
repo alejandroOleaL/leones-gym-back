@@ -47,6 +47,8 @@ public class Usuario implements Serializable {
 	private List<Venta> ventas;
 	
 	private String tipo;
+	
+	private Boolean reseteoPass;
 
 	public Usuario() {
 		this.ventas = new ArrayList<>();
@@ -130,6 +132,14 @@ public class Usuario implements Serializable {
 
 	public void setVentas(List<Venta> ventas) {
 		this.ventas = ventas;
+	}
+
+	public Boolean getReseteoPass() {
+		return reseteoPass;
+	}
+
+	public void setReseteoPass(Boolean reseteoPass) {
+		this.reseteoPass = reseteoPass;
 	}
 
 //	@Override

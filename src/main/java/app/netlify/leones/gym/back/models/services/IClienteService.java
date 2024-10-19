@@ -60,4 +60,6 @@ public interface IClienteService {
 	public int findCountSemestre(Date fecha);
 	
 	public int findCountAnual(Date fecha);
+	
+	public Cliente findByClienteCorreo(String correo);
 }

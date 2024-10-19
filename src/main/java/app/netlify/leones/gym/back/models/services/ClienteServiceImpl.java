@@ -151,5 +151,10 @@ public class ClienteServiceImpl implements IClienteService {
 	public int findCountAnual(Date fecha) {
 		return clienteDao.findCountAnual(fecha);
 	}
+
+	@Override
+	public Cliente findByClienteCorreo(String correo) {
+		return clienteDao.findByClienteCorreo(correo);
+	}
 	
 }

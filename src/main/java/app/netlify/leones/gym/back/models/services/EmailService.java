@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import app.netlify.leones.gym.back.models.entity.Cliente;
+import app.netlify.leones.gym.back.models.entity.Usuario;
 
 @Service
 @Transactional
@@ -42,18 +43,32 @@ public class EmailService {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public void sendListEmail(String emailTo, String image) {
+	
+	public void reenviarQREmail(Cliente cliente, String image) {
 		MimeMessage message = javaMailSender.createMimeMessage();
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setFrom(email);
-			helper.setTo(emailTo);
-			helper.setSubject("Listado");
-			helper.setText("Estimado cliente");
-
+			helper.setTo(cliente.getCorreo());
+			helper.setSubject("Hola " + cliente.getNombre() + " has solicitado un reenvio de tu QR!" );
+			helper.setText("Tu numero de control es: " + cliente.getApellidos() + " tambien encontraras un codigo qr para tu ingreso.");
 			FileSystemResource file = new FileSystemResource(new File(image));
 			helper.addAttachment(image, file);
+
+			javaMailSender.send(message);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void recuperContraseñaEmail(Usuario usuario) {
+		MimeMessage message = javaMailSender.createMimeMessage();
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+			helper.setFrom(email);
+			helper.setTo(usuario.getEmail());
+			helper.setSubject("Hola " + usuario.getUsername() + " has solicitado un reseteo de contraseña!" );
+			helper.setText("Favor de copiar el siguiente elance en tu navegador: http://localhost:4200/leonesgym-front/recupera/pass/" + usuario.getId());
 
 			javaMailSender.send(message);
 		} catch (Exception e) {

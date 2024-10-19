@@ -36,6 +36,7 @@ import app.netlify.leones.gym.back.models.entity.Datos;
 import app.netlify.leones.gym.back.models.entity.Historial;
 import app.netlify.leones.gym.back.models.entity.Operacion;
 import app.netlify.leones.gym.back.models.entity.Periodo;
+import app.netlify.leones.gym.back.models.entity.ValidaCorreo;
 import app.netlify.leones.gym.back.models.services.EmailService;
 import app.netlify.leones.gym.back.models.services.IClienteService;
 import app.netlify.leones.gym.back.models.services.IHistorialService;
@@ -90,16 +91,16 @@ public class ClienteRestController {
 		datos.setRegistros(clienteService.findCountClientesHoyRegistros());
 		datos.setVisitasHoyReg(clienteService.findCountVisitasHoy());
 		
-		int count = clienteService.findCountMes(restarDiasAFecha(31));
+		int count = clienteService.findCountMes(restarDiasAFecha(40));
 		System.out.println("REGISTROS MES: " + count);
 		datos.setRegistrosMes(count);
 		
-		datos.setRegistrosSemana(clienteService.findCountSemana(restarDiasAFecha(31)));
-		datos.setRegistrosQuincena(clienteService.findCountQuincena(restarDiasAFecha(31)));
-		datos.setRegistrosBimestre(clienteService.findCountBimestre(restarDiasAFecha(31)));
-		datos.setRegistrosTrimestre(clienteService.findCounttrimestre(restarDiasAFecha(31)));
-		datos.setRegistrosSemestre(clienteService.findCounttrimestre(restarDiasAFecha(31)));
-		datos.setRegistrosAnual(clienteService.findCountAnual(restarDiasAFecha(31)));
+		datos.setRegistrosSemana(clienteService.findCountSemana(restarDiasAFecha(40)));
+		datos.setRegistrosQuincena(clienteService.findCountQuincena(restarDiasAFecha(40)));
+		datos.setRegistrosBimestre(clienteService.findCountBimestre(restarDiasAFecha(40)));
+		datos.setRegistrosTrimestre(clienteService.findCounttrimestre(restarDiasAFecha(40)));
+		datos.setRegistrosSemestre(clienteService.findCounttrimestre(restarDiasAFecha(40)));
+		datos.setRegistrosAnual(clienteService.findCountAnual(restarDiasAFecha(40)));
 		datos = component.obtenerSaldos(datos);
 		return datos;
 	}
@@ -166,6 +167,14 @@ public class ClienteRestController {
 		try {
 
 			cliente = clienteService.findById(id);
+			if(cliente == null || Objects.isNull(cliente)) {
+				cliente = new Cliente();
+				cliente.setExiste(false);
+				cliente.setId((long) 0);
+			}
+			else {
+				cliente.setExiste(true);
+			}
 
 		} catch (Exception e) {
 			System.out.println(e);
@@ -348,7 +357,7 @@ public class ClienteRestController {
 			clienteActualizado = clienteService.save(clienteActual);
 			
 			String nombreCompleto = clienteActualizado.getNombre() + " " + clienteActualizado.getApellidos();
-			guardarOperacion("Modificación", cliente, nombreCompleto, cliente.getFechaFin());
+			guardarOperacion("Renovacion", cliente, nombreCompleto, cliente.getFechaFin());
 		} catch (Exception e) {
 			response.put("mensaje", "Error al actualizar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
@@ -434,7 +443,6 @@ public class ClienteRestController {
 	
 	@GetMapping("/registra/operacion/{username}")
 	public ResponseEntity<?> listarPeriodos(@PathVariable String username) {
-		System.out.println("USUARIO: " + username);
 		Map<String, Object> response = new HashMap<>();
 		Cliente cliente = component.validarEstatus("101");
 		guardarOperacionVisita("Visita pagada", cliente, username, new Date());
@@ -442,14 +450,40 @@ public class ClienteRestController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/v1/qrcode")
-	public void generateQRCode(javax.servlet.http.HttpServletResponse response, @RequestParam String text,
-			@RequestParam(defaultValue = "350") int width, @RequestParam(defaultValue = "350") int height)
-			throws Exception {
+//	@GetMapping("/v1/qrcode")
+//	public void generateQRCode(javax.servlet.http.HttpServletResponse response, @RequestParam String text,
+//			@RequestParam(defaultValue = "350") int width, @RequestParam(defaultValue = "350") int height)
+//			throws Exception {
+//
+//		String path = qrCodeService.generateQRCode(text, width, height);
+//
+//		this.emailService.sendListEmail("alejandro12olea@gmail.com", path);
+//	}
+	
+	@GetMapping("/enviar/qr/{id}")
+	public ResponseEntity<?> enviarQR(@PathVariable Long id) {
+		Map<String, Object> response = new HashMap<>();
 
-		String path = qrCodeService.generateQRCode(text, width, height);
+		try {
+			Cliente cliente = clienteService.findById(id);
+			String text = Long.toString(cliente.getId());
+			int width = 350;
+			int height = 350;
 
-		this.emailService.sendListEmail("alejandro12olea@gmail.com", path);
+			String path = qrCodeService.generateQRCode(text, width, height);
+
+			if(cliente.getCorreo() != null) {
+				this.emailService.reenviarQREmail(cliente, path);
+			}
+
+		} catch (Exception e) {
+			response.put("mensaje", "Error al enviar el codigo QR");
+			response.put("error", e.getMessage().concat(": "));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "Se ha enviado el código QR con exito");
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);		
 	}
 
 	public void generarQR(Cliente cliente, String numControl) throws Exception {

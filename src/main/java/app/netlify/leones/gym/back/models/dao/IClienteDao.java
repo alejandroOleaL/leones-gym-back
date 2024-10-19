@@ -80,4 +80,8 @@ public interface IClienteDao extends JpaRepository<Cliente, Long>{
 	//0btener anual
 	@Query("SELECT COUNT(*) FROM Cliente c where c.periodo = 7 AND c.fechaRegistro > ?1")
 	public int findCountAnual(Date fecha);
+	
+	//Busqueda correo
+	@Query("SELECT c FROM Cliente c WHERE c.correo = ?1")
+	public Cliente findByClienteCorreo(String correo);
 }

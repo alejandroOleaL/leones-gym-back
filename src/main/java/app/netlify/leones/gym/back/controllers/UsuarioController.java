@@ -23,8 +23,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.netlify.leones.gym.back.models.entity.Cliente;
 import app.netlify.leones.gym.back.models.entity.Role;
 import app.netlify.leones.gym.back.models.entity.Usuario;
+import app.netlify.leones.gym.back.models.entity.ValidaCorreo;
+import app.netlify.leones.gym.back.models.services.EmailService;
 import app.netlify.leones.gym.back.models.services.UsuarioService;
 
 @CrossOrigin(origins = {"http://localhost:4200", "https://leonesgym.web.app", "http://localhost:8090" })
@@ -38,6 +41,9 @@ public class UsuarioController {
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private EmailService emailService;
 	
 	@GetMapping("/usuarios")
 	public List<Usuario> index(){
@@ -122,11 +128,17 @@ public class UsuarioController {
 			
 			usuario.setEnabled(true);
 			usuarioNuevo = usuarioService.save(usuario);
-			System.out.println("*************************NUEVO:");
-			System.out.println(usuarioNuevo);
 		} catch (Exception e) {
+			System.out.println("ERRR: " + e);
 			response.put("mensaje", "Error al insertar la base de datos");
-			response.put("error", e.getMessage().concat(": "));
+			if(e.toString().contains("org.springframework.dao.DataIntegrityViolationException: could not execute statement; SQL")) {
+				System.out.println("CONTIENE");
+				response.put("error", "Ya existe un usuario con el correo que se ingreso");
+			}
+			else {
+				response.put("error", e.getMessage().concat(": "));
+			}
+			
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		response.put("mensaje", "El usuario se ha creado con exito");
@@ -176,6 +188,51 @@ public class UsuarioController {
 		}
 		
 		response.put("mensaje", "El usuario se ha eliminado con exito");
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/recupera/contraseña")
+	public ResponseEntity<?> validarCorreo(@RequestBody ValidaCorreo correo){
+		Map<String, Object> response = new HashMap<>();
+		System.out.println("ENTRA A RECUPERA CONTRASEÑA: " + correo);
+		try {
+			Usuario usuario = usuarioService.findByUsuarioCorreo(correo.getEmail());
+			System.out.println("Obtiene EL USUARIO: " + usuario);
+			if(usuario.getEmail() != null) {
+				this.emailService.recuperContraseñaEmail(usuario);
+			}
+			
+
+		} catch (Exception e) {
+			response.put("mensaje", "No se encontro ningun usuario con el correo que ingresaste");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		} 
+		
+		response.put("mensaje", "Se ha enviado el código QR con exito");
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/actualizar/contraseña")
+	public ResponseEntity<?> actualizarPass(@RequestBody ValidaCorreo correo){
+		Map<String, Object> response = new HashMap<>();
+		System.out.println("ENTRA A RECUPERA CONTRASEÑA: " + correo);
+		
+		try {
+			System.out.println("VA A BUSCAR POR COREEO: " + correo);
+			Usuario usuario = usuarioService.findById((long) correo.getIdUser());
+			System.out.println("OBTIENE EL USUARIO: " + usuario);
+			
+			String passwordBcrypt = passwordEncoder.encode(correo.getNewPass());
+			usuario.setPassword(passwordBcrypt);
+			
+			usuarioNuevo = usuarioService.save(usuario);
+
+		} catch (Exception e) {
+			response.put("mensaje", "No se encontro ningun usuario con el correo ");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		} 
+		
+		response.put("mensaje", "Se ha cambiado la contraseña con exito!");
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 

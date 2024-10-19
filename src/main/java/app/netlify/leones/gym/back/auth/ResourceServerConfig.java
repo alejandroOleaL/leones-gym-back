@@ -27,7 +27,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 				"/leonesgym/clientes/numero/control/**", "/leonesgym/clientes/qr/**", "/leonesgym/clientes/registros/**",
 				"/leonesgym/clientes/**", "/leonesgym/clientes/enviar/**", "/leonesgym/clientes/enviar/{id}", 
 				"/leonesgym/clientes/vencidos/page/**", "/leonesgym/clientes/activos/page/**", "/leonesgym/clientes/{id}", "/leonesgym/productos/{id}",
-				"/leonesgym/operaciones/page/**", "/leonesgym/precios/**", "/leonesgym/registra/operacion/{username}").permitAll()
+				"/leonesgym/operaciones/page/**", "/leonesgym/precios/**", "/leonesgym/registra/operacion/{username}", "/leonesgym/enviar/qr/{id}").permitAll()
 		.antMatchers(HttpMethod.GET, "/leonesgym/clientes/{id}").hasAnyRole("USER", "ADMIN")
 		.antMatchers(HttpMethod.POST, "/leonesgym/upload").hasAnyRole("USER", "ADMIN")
 		.antMatchers(HttpMethod.POST, "/leonesgym/clientes").permitAll()
@@ -52,6 +52,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		.antMatchers(HttpMethod.POST, "/leonesgym/ventas").permitAll()
 		.antMatchers(HttpMethod.PUT, "/leonesgym/clientes").hasAnyRole("USER", "ADMIN")
 		.antMatchers(HttpMethod.DELETE, "/leonesgym/clientes").hasRole("ADMIN")
+		.antMatchers(HttpMethod.POST, "/leonesgym/recupera/contraseña/**").permitAll()
+		.antMatchers(HttpMethod.POST, "/leonesgym/actualizar/contraseña/**").permitAll()
 		.anyRequest().authenticated()
 		.and().cors().configurationSource(corsConfigurationSource());
 	}
