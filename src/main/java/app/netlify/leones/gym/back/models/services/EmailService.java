@@ -68,7 +68,7 @@ public class EmailService {
 			helper.setFrom(email);
 			helper.setTo(usuario.getEmail());
 			helper.setSubject("Hola " + usuario.getUsername() + " has solicitado un reseteo de contraseña!" );
-			helper.setText("Favor de copiar el siguiente elance en tu navegador: http://localhost:4200/leonesgym-front/recupera/pass/" + usuario.getId());
+			helper.setText("Favor de copiar el siguiente elance en tu navegador: http://localhost:8090/leonesgym-front/#/recupera/pass/" + usuario.getId());
 
 			javaMailSender.send(message);
 		} catch (Exception e) {

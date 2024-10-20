@@ -90,6 +90,8 @@ public class UsuarioController {
 		try {
 			usuario = usuarioService.findByUsername(username);
 		} catch (Exception e) {
+			System.out.println("ERRR: " + e);
+			
 			response.put("mensaje", "Error al consultar la base de datos");
 			response.put("error", e.getMessage().concat(": "));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -132,7 +134,6 @@ public class UsuarioController {
 			System.out.println("ERRR: " + e);
 			response.put("mensaje", "Error al insertar la base de datos");
 			if(e.toString().contains("org.springframework.dao.DataIntegrityViolationException: could not execute statement; SQL")) {
-				System.out.println("CONTIENE");
 				response.put("error", "Ya existe un usuario con el correo que se ingreso");
 			}
 			else {

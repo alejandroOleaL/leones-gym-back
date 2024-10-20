@@ -280,8 +280,15 @@ public class ClienteRestController {
 			String nombreCompleto = cliente.getNombre() + " " + cliente.getApellidos();
 			guardarOperacion("Registro", cliente, nombreCompleto, fechaFin);
 		} catch (Exception e) {
-			response.put("mensaje", "Error al insertar la base de datos");
-			response.put("error", e.getMessage().concat(": "));
+			System.out.println("ERRR: " + e);
+			if(e.toString().contains("com.sun.mail.util.MailConnectException")) {
+				response.put("mensaje", "Error al enviar el correo!");
+				response.put("error", "Se registro el cliente pero no se le pudo enviar correo!");
+			}
+			else {
+				response.put("mensaje", "Error al insertar la base de datos");
+				response.put("error", e.getMessage().concat(": "));
+			}
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		response.put("mensaje", "El cliente se ha creado con exito");
