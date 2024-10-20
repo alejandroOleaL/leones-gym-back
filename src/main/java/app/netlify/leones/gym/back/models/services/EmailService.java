@@ -51,7 +51,7 @@ public class EmailService {
 			helper.setFrom(email);
 			helper.setTo(cliente.getCorreo());
 			helper.setSubject("Hola " + cliente.getNombre() + " has solicitado un reenvio de tu QR!" );
-			helper.setText("Tu numero de control es: " + cliente.getApellidos() + " tambien encontraras un codigo qr para tu ingreso.");
+			helper.setText("Tu numero de control es: " + cliente.getNumControl() + " tambien encontraras un codigo qr para tu ingreso.");
 			FileSystemResource file = new FileSystemResource(new File(image));
 			helper.addAttachment(image, file);
 
