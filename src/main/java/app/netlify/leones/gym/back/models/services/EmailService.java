@@ -25,13 +25,18 @@ public class EmailService {
 	@Value("${spring.mail.username}")
 	private String email;
 	
+	private String correoAdmin = "cabanasjosh4@gmail.com";
 	
 	public void sendListEmail(Cliente cliente, String image, String numControl) {
 		MimeMessage message = javaMailSender.createMimeMessage();
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setFrom(email);
-			helper.setTo(cliente.getCorreo());
+			if(cliente.getCorreo() == null || cliente.getCorreo() == " ") {
+				helper.setTo(correoAdmin);
+			} else {
+				helper.setTo(cliente.getCorreo());
+			}
 			helper.setSubject("Bienvenido " + cliente.getNombre() + " a Leones Gym!" );
 			helper.setText("Su registro ha sido exitoso");
 			helper.setText("Su numero de control es: " + numControl + " tambien encontraras un codigo qr para tu ingreso.");
@@ -49,7 +54,11 @@ public class EmailService {
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setFrom(email);
-			helper.setTo(cliente.getCorreo());
+			if(cliente.getCorreo() == null || cliente.getCorreo() == " ") {
+				helper.setTo(correoAdmin);
+			} else {
+				helper.setTo(cliente.getCorreo());
+			}
 			helper.setSubject("Hola " + cliente.getNombre() + " has solicitado un reenvio de tu QR!" );
 			helper.setText("Tu numero de control es: " + cliente.getNumControl() + " tambien encontraras un codigo qr para tu ingreso.");
 			FileSystemResource file = new FileSystemResource(new File(image));

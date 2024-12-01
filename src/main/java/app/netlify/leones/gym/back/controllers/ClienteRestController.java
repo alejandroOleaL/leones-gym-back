@@ -36,14 +36,12 @@ import app.netlify.leones.gym.back.models.entity.Datos;
 import app.netlify.leones.gym.back.models.entity.Historial;
 import app.netlify.leones.gym.back.models.entity.Operacion;
 import app.netlify.leones.gym.back.models.entity.Periodo;
-import app.netlify.leones.gym.back.models.entity.ValidaCorreo;
 import app.netlify.leones.gym.back.models.services.EmailService;
 import app.netlify.leones.gym.back.models.services.IClienteService;
 import app.netlify.leones.gym.back.models.services.IHistorialService;
 import app.netlify.leones.gym.back.models.services.IOperacionesService;
 import app.netlify.leones.gym.back.models.services.IUploadFileService;
 import app.netlify.leones.gym.back.models.services.QRCodeService;
-import jdk.internal.org.jline.utils.Log;
 
 @CrossOrigin(origins = { "http://localhost:4200", "https://leonesgym.web.app", "http://localhost:8090" })
 @RestController
@@ -285,6 +283,11 @@ public class ClienteRestController {
 				response.put("mensaje", "Error al enviar el correo!");
 				response.put("error", "Se registro el cliente pero no se le pudo enviar correo!");
 			}
+			else if(e.toString().contains("org.springframework.dao.DataIntegrityViolationException")) {
+				Cliente clienteCorreo = clienteService.findByClienteCorreo(cliente.getCorreo());
+				response.put("mensaje", "Error al insertar la base de datos");
+				response.put("error", "Ya existe un cliente con el correo que se ingreso: " + clienteCorreo.getNombre() + " " + clienteCorreo.getApellidos());
+			}
 			else {
 				response.put("mensaje", "Error al insertar la base de datos");
 				response.put("error", e.getMessage().concat(": "));
@@ -479,9 +482,7 @@ public class ClienteRestController {
 
 			String path = qrCodeService.generateQRCode(text, width, height);
 
-			if(cliente.getCorreo() != null) {
-				this.emailService.reenviarQREmail(cliente, path);
-			}
+			this.emailService.reenviarQREmail(cliente, path);
 
 		} catch (Exception e) {
 			response.put("mensaje", "Error al enviar el codigo QR");
@@ -500,9 +501,7 @@ public class ClienteRestController {
 
 		String path = qrCodeService.generateQRCode(text, width, height);
 
-		if(cliente.getCorreo() != null) {
-			this.emailService.sendListEmail(cliente, path, numControl);
-		}
+		this.emailService.sendListEmail(cliente, path, numControl);
 		
 	}
 
